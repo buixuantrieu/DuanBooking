@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  roleName    String
+  description String
+  isDelete    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User[]
+}
+
+model StatusUser {
+  id          Int      @id @default(autoincrement())
+  statusName  String
+  description String
+  isDelete    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User[]
+}
+
+model User {
+  id             String       @id
+  role           Role         @relation(fields: [roleId], references: [id])
+  roleId         Int
+  statusUser     StatusUser?  @relation(fields: [statusUserId], references: [id])
+  statusUserId   Int
+  userName       String
+  password       String
+  email          String       @unique
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  profile        Profile?
+  activationCode Int
+  userSetting    UserSetting?
+  userLog        UserLog?
+  Partner        Partner?
+}
+
+model Profile {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @unique
+  fullName    String?
+  phone       String?
+  dateOfBirth DateTime? @db.Date
+  gender      Int?
+  avatar      String?   @db.MediumText
+  address     String?
+  updatedAt   DateTime  @updatedAt
+}
+
+model UserSetting {
+  id             Int      @id @default(autoincrement())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique
+  themeDark      Boolean  @default(false)
+  isNotification Boolean  @default(true)
+  isReceiveEmail Boolean  @default(true)
+  updatedAt      DateTime @updatedAt
+}
+
+model UserLog {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  actionType  String?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Partner {
+  id                 Int      @id @default(autoincrement())
+  isApproved         Boolean  @default(false)
+  paymentAccountType String
+  paymentAccountInfo String
+  createdAt          DateTime @default(now())
+  updatedAd          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id])
+  userId             String   @unique
+}
+
+model Province {
+  province_id Int        @id @map("province_id")
+  name        String     @map("name") @db.VarChar(64)
+  District    District[]
+
+  @@map("province")
+}
+
+model District {
+  district_id Int      @id @map("district_id")
+  province_id Int
+  name        String   @map("name") @db.VarChar(64)
+  Province    Province @relation(fields: [province_id], references: [province_id])
+  Wards       Wards[]
+
+  @@map("district")
+}
+
+model Wards {
+  wards_id    Int      @id @map("wards_id")
+  district_id Int
+  name        String   @map("name") @db.VarChar(64)
+  District    District @relation(fields: [district_id], references: [district_id])
+
+  @@map("wards")
+}
