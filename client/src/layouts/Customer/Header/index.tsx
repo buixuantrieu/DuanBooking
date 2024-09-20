@@ -13,11 +13,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { logoutRequest } from "@slices/user.slice";
+import { CiLogin } from "react-icons/ci";
 function Header() {
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const { userInfo } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const items = [
     {
       key: "1",
@@ -93,21 +95,27 @@ function Header() {
         <S.NavElement to={ROUTES.USER.CONTACT}>Liên hệ</S.NavElement>
       </S.NavContainer>
       <S.HeaderControl>
-        <S.Icon>
-          <IoMdNotificationsOutline />
-        </S.Icon>
+        {userInfo.data.id ? (
+          <>
+            <S.Icon>
+              <IoMdNotificationsOutline />
+            </S.Icon>
 
-        <S.Role>Khách hàng</S.Role>
-        <S.Icon>
-          {!showMenu && (
-            <Dropdown menu={{ items }} arrow>
-              {userInfo.data.profile?.avatar ? <S.Avatar src={userInfo.data.profile?.avatar} /> : <Avatar />}
-            </Dropdown>
-          )}
-        </S.Icon>
-        <S.IconMenu onClick={() => setShowMenu(!showMenu)}>
-          <AiOutlineMenuUnfold />
-        </S.IconMenu>
+            <S.Role>Khách hàng</S.Role>
+            <S.Icon>
+              {!showMenu && (
+                <Dropdown menu={{ items }} arrow>
+                  {userInfo.data.profile?.avatar ? <S.Avatar src={userInfo.data.profile?.avatar} /> : <Avatar />}
+                </Dropdown>
+              )}
+            </S.Icon>
+            <S.IconMenu onClick={() => setShowMenu(!showMenu)}>
+              <AiOutlineMenuUnfold />
+            </S.IconMenu>
+          </>
+        ) : (
+          <CiLogin style={{ cursor: "pointer" }} />
+        )}
       </S.HeaderControl>
     </S.HeaderWrapper>
   );

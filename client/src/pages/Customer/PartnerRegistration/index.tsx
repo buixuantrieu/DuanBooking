@@ -1,23 +1,44 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Button, message, Steps, Form, Select, Row, Col, Input, Radio } from "antd";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useMemo, useState } from "react";
+import { Button, Steps, Form, Select, Row, Col, Input, Radio, Card, notification } from "antd";
 import * as S from "./styles";
 import { useDispatch, useSelector } from "react-redux";
 import { getDistrictRequest, getProvinceRequest, getWardRequest } from "@slices/address.slice";
+import { registerPartnerRequest } from "@slices/user.slice";
+import { useNavigate } from "react-router-dom";
 import { RootState } from "store";
+import { ROUTES } from "@constants/routes";
 
-const App: React.FC = () => {
+function PartnerRegistration() {
   const [current, setCurrent] = useState(0);
   const [form] = Form.useForm();
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<{
+    province?: number;
+    district?: number;
+    ward?: number;
+    address?: string;
+    fullName?: string;
+    method?: string;
+    paypal?: string;
+    phone?: string;
+  }>({});
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getProvinceRequest());
   }, []);
+  const { userInfo } = useSelector((state: RootState) => state.user);
   const { provinceList } = useSelector((state: RootState) => state.address);
   const { districtList } = useSelector((state: RootState) => state.address);
   const { wardList } = useSelector((state: RootState) => state.address);
+
+  const { province, district, ward } = formData;
+  const provinceData = provinceList.data.find((item) => item.province_id === province);
+  const districtData = districtList.data.find((item) => item.district_id === district);
+  const wardData = wardList.data.find((item) => item.wards_id === ward);
+  const address = `${formData.address}, ${wardData?.name}, ${districtData?.name}, ${provinceData?.name}`;
 
   const renderProvincesOptions = useMemo(() => {
     return provinceList.data.map((province) => (
@@ -109,7 +130,7 @@ const App: React.FC = () => {
       ),
     },
     {
-      title: "Second",
+      title: "Nhập thông tin đối tác",
       content: (
         <S.InfoWrapper>
           <Row gutter={[16, 16]}>
@@ -246,16 +267,12 @@ const App: React.FC = () => {
             <Col span={12}></Col>
             <Col span={24}>
               <Form.Item
-                label="Email nhận tiền (Paypal):"
+                label="Id nhận tiền (Paypal):"
                 name="paypal"
                 rules={[
                   {
                     required: true,
                     message: "Không được để trống!",
-                  },
-                  {
-                    type: "email",
-                    message: "Không đúng định dạng!",
                   },
                 ]}
               >
@@ -267,8 +284,28 @@ const App: React.FC = () => {
       ),
     },
     {
-      title: "Last",
-      content: "Processing complete!",
+      title: "Kiểm tra thông tin",
+      content: (
+        <S.CheckWrapper>
+          <Card title="Kiểm tra lại thông tin">
+            <div>
+              <S.CheckLabel>Họ và tên:</S.CheckLabel> <span>{formData.fullName}</span>
+            </div>
+            <div>
+              <S.CheckLabel>Địa chỉ:</S.CheckLabel> <span>{address}</span>
+            </div>
+            <div>
+              <S.CheckLabel>Số điện thoại:</S.CheckLabel> <span>{formData.phone}</span>
+            </div>
+            <S.CheckLabel>
+              <span>Phương thức thanh toán:</span> <span>{formData.method}</span>
+            </S.CheckLabel>
+            <div>
+              <S.CheckLabel>Id nhận tiền:</S.CheckLabel> <span>{formData.paypal}</span>
+            </div>
+          </Card>
+        </S.CheckWrapper>
+      ),
     },
   ];
 
@@ -289,8 +326,26 @@ const App: React.FC = () => {
   };
 
   const handleDone = () => {
-    message.success("Processing complete!");
-    console.log("All form data:", formData);
+    const registerInfo = {
+      paymentAccountMethod: formData.method,
+      paymentAccountType: formData.method,
+      paymentAccountInfo: formData.paypal,
+      userId: userInfo.data.id,
+      address,
+      provinceId: formData.province,
+      districtId: formData.district,
+      wardId: formData.ward,
+      phone: formData.phone,
+    };
+    dispatch(
+      registerPartnerRequest({
+        data: registerInfo,
+        callback: () => {
+          navigate(ROUTES.USER.HOME);
+          notification.success({ message: "Gửi yêu câu đăng kí đối tác thành công! Vui lòng đợi admin phê duyệt!" });
+        },
+      })
+    );
   };
 
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
@@ -306,22 +361,22 @@ const App: React.FC = () => {
       <div style={{ marginTop: 24 }}>
         {current < steps.length - 1 && (
           <Button type="primary" onClick={next}>
-            Next
+            Bước tiếp
           </Button>
         )}
         {current === steps.length - 1 && (
           <Button type="primary" onClick={handleDone}>
-            Done
+            Gửi đăng kí
           </Button>
         )}
         {current > 0 && (
           <Button style={{ margin: "0 8px" }} onClick={prev}>
-            Previous
+            Quay lại
           </Button>
         )}
       </div>
     </>
   );
-};
+}
 
-export default App;
+export default PartnerRegistration;

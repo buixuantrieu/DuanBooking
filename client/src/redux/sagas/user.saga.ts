@@ -21,6 +21,9 @@ import {
   getUserInfoRequest,
   getUserInfoFailure,
   getUserInfoSuccess,
+  registerPartnerRequest,
+  registerPartnerSuccess,
+  registerPartnerFailure,
 } from "@slices/user.slice";
 import { notification } from "antd";
 
@@ -37,6 +40,7 @@ function* registerUserSaga(action: AnyAction): Generator {
       const errorMessage = error.response?.data.message || " Tài khoản hoặc email đã tồn tại!";
       yield put(registerUserFailure({ error: errorMessage }));
     } else {
+      console.error = () => {};
       yield put(registerUserFailure({ error: "Internal Server Error" }));
     }
   }
@@ -75,12 +79,14 @@ function* loginUserSaga(action: AnyAction): Generator {
       userName: data.userNameLogin,
       password: data.passwordLogin,
     });
+
     yield localStorage.setItem("accessToken", result.data.accessToken);
     yield localStorage.setItem("refreshToken", result.data.refreshToken);
+
     yield put(getUserInfoRequest());
     yield put(loginUserSuccess());
+    yield callback(result.data.user.UserRole[0].roleId);
     yield notification.success({ message: "Đăng nhập thành công!" });
-    yield callback();
   } catch (e) {
     yield put(loginUserFailure({ error: "Sai tài khoản hoặc mật khẩu" }));
   }
@@ -91,11 +97,12 @@ function* loginWithGoogleSaga(action: AnyAction): Generator {
     const result = yield axios.get("http://localhost:3000/login/google/callback", {
       params: { code },
     });
+
     yield localStorage.setItem("accessToken", result.data.accessToken);
     yield localStorage.setItem("refreshToken", result.data.refreshToken);
     yield put(getUserInfoRequest());
     yield put(loginUserSuccess());
-    yield callback(result.data.roleId);
+    yield callback(result.data.user.UserRole[0].roleId);
     yield notification.success({ message: "Đăng nhập thành công !" });
   } catch (e) {
     yield notification.error({ message: "Login with Google Failed!" });
@@ -105,9 +112,20 @@ function* loginWithGoogleSaga(action: AnyAction): Generator {
 function* getUserInfoSaga(_action: AnyAction): Generator {
   try {
     const result = yield apiClient.get("http://localhost:3000/users/user-info");
+
     yield put(getUserInfoSuccess({ data: result.data }));
   } catch (e) {
     yield put(getUserInfoFailure({ error: "Lỗi" }));
+  }
+}
+function* registerPartnerSaga(action: AnyAction): Generator {
+  try {
+    const { data, callback } = action.payload;
+    yield apiClient.post("http://localhost:3000/users/register-partner", data);
+    yield put(registerPartnerSuccess());
+    yield callback();
+  } catch (e) {
+    yield put(registerPartnerFailure({ error: "Lỗi" }));
   }
 }
 
@@ -118,4 +136,5 @@ export default function* userSaga() {
   yield takeEvery(loginUserRequest, loginUserSaga);
   yield takeEvery(loginWithGoogle, loginWithGoogleSaga);
   yield takeEvery(getUserInfoRequest, getUserInfoSaga);
+  yield takeEvery(registerPartnerRequest, registerPartnerSaga);
 }

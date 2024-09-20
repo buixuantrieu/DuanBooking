@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createSubTableUser, createUser, getUsers, sendMail, updateUser } from "@services/userService";
+import { createSubTableUser, createUser, createUserRole, getUsers, sendMail, updateUser } from "@services/userService";
 import { generateRandom4DigitNumber } from "@utils/randomUtils";
 import { v4 as uuid } from "uuid";
 
@@ -47,7 +47,8 @@ export class RegisterController {
       const { activationCode } = req.body;
       const user = await getUsers({ id, activationCode });
       if (user.length > 0) {
-        const user = await updateUser(id, { statusUserId: 2 });
+        const user = await updateUser(id, { status: 2 });
+        await createUserRole(id, 2);
         await createSubTableUser(id);
         return res.json(user);
       } else {

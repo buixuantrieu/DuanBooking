@@ -10,6 +10,7 @@ export class UserRoute {
 
   public static draw() {
     this.path.route("/user-info").get(authenticateToken, this.userController.userInfo);
+    this.path.route("/register-partner").post(authenticateToken, this.userController.registerPartner);
     Route.resource(this.path, this.userController, {
       only: [RestActions.Destroy],
     });

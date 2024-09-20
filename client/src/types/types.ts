@@ -40,6 +40,12 @@ export interface UserType {
   skip?: number;
   include?: IncludeParams;
   profile?: ProfileType;
+  UserRole?: UserRole[] | undefined;
+}
+export interface UserRole {
+  id?: number;
+  userId?: number;
+  roleId?: number;
 }
 export interface StatusUserType {
   id?: number;

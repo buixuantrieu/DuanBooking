@@ -29,3 +29,7 @@ export const Title = styled.div`
   font-weight: 500;
 `;
 export const Description = styled.div``;
+export const CheckWrapper = styled.div``;
+export const CheckLabel = styled.span`
+  font-weight: bold;
+`;

@@ -1,4 +1,4 @@
-import { deleteUser, getUserDetailById } from "@services/userService";
+import { createPartner, deleteUser, getUserDetailById, updateProfileById } from "@services/userService";
 import { Request, Response } from "express";
 
 interface CustomRequest extends Request {
@@ -20,6 +20,26 @@ export class UserController {
     try {
       const user = await getUserDetailById(req.userId as string);
       return res.json(user);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  public async registerPartner(req: CustomRequest, res: Response) {
+    try {
+      const {
+        paymentAccountMethod,
+        paymentAccountType,
+        paymentAccountInfo,
+        userId,
+        address,
+        provinceId,
+        districtId,
+        wardId,
+        phone,
+      } = req.body;
+      const partner = await createPartner(userId, paymentAccountMethod, paymentAccountType, paymentAccountInfo);
+      await updateProfileById(userId, { address, provinceId, districtId, wardId, phone });
+      return res.json(partner);
     } catch (e) {
       return res.status(500).json({ message: "Internal Server Error" });
     }
