@@ -16,7 +16,6 @@ export interface UserTypeList {
     loading: boolean;
     error: string | null;
   };
-
   userRegister: {
     loading: boolean;
     error: string | null;
@@ -142,6 +141,19 @@ export const userSlice = createSlice({
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     },
+    registerPartnerRequest: (state, _action) => {
+      state.userList.loading = true;
+      state.userList.error = null;
+    },
+    registerPartnerSuccess: (state) => {
+      state.userList.loading = false;
+      state.userList.error = null;
+    },
+    registerPartnerFailure: (state, action) => {
+      const { error } = action.payload;
+      state.userList.loading = false;
+      state.userList.error = error;
+    },
   },
 });
 
@@ -163,6 +175,9 @@ export const {
   getUserInfoSuccess,
   getUserInfoFailure,
   logoutRequest,
+  registerPartnerRequest,
+  registerPartnerSuccess,
+  registerPartnerFailure,
 } = userSlice.actions;
 
 export default userSlice.reducer;

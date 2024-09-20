@@ -13,14 +13,14 @@ export const getUsers = async (
   take?: number,
   skip?: number
 ) => {
-  const roles = await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: params,
     orderBy,
     include,
     take,
     skip,
   });
-  return roles;
+  return users;
 };
 export const createUser = async (
   id: string,
@@ -28,7 +28,7 @@ export const createUser = async (
   password: string,
   email: string,
   activationCode: number,
-  statusUserId: number
+  status: number
 ) => {
   const hashPass = hashPassword(password);
   const user = await prisma.user.create({
@@ -37,8 +37,7 @@ export const createUser = async (
       userName,
       password: hashPass,
       email,
-      roleId: 2,
-      statusUserId,
+      status,
       activationCode,
     },
   });
@@ -71,7 +70,7 @@ export const sendMail = async (email: string, htmlContent: string) => {
       html: htmlContent,
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
     console.error("Error sending email:", error);
@@ -141,7 +140,39 @@ export const getUserDetailById = async (id: string) => {
       profile: true,
       userLog: true,
       userSetting: true,
+      UserRole: {
+        include: {
+          role: true,
+        },
+      },
     },
   });
   return user;
+};
+
+export const createUserRole = async (userId: string, roleId: number) => {
+  const userRole = await prisma.userRole.create({
+    data: {
+      userId,
+      roleId,
+    },
+  });
+  return userRole;
+};
+export const createPartner = async (
+  userId: string,
+  paymentAccountMethod: string,
+  paymentAccountType: string,
+  paymentAccountInfo: string
+) => {
+  const partner = await prisma.partner.create({
+    data: {
+      isApproved: false,
+      userId,
+      paymentAccountInfo,
+      paymentAccountMethod,
+      paymentAccountType,
+    },
+  });
+  return partner;
 };

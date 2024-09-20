@@ -1,7 +1,9 @@
 import env from "@configs/env";
+import prisma from "@prismaClient";
 import {
   createSubTableUser,
   createUser,
+  createUserRole,
   generateAccessToken,
   generateRefreshToken,
   getUsers,
@@ -17,13 +19,32 @@ export class LoginController {
   public async create(req: Request, res: Response) {
     try {
       const { userName, password } = req.body;
-      const user = await getUsers({ userName });
+      const user = await getUsers(
+        {
+          userName,
+        },
+        undefined,
+        {
+          UserRole: {
+            include: {
+              role: true,
+            },
+          },
+        }
+      );
       if (user.length > 0) {
+        if (user[0].status === 1) {
+          return res.status(400).json({ message: "Tài khoản chưa kích hoạt!" });
+        } else if (user[0].status === 3) {
+          return res
+            .status(400)
+            .json({ message: "Tài khoản đã bị khóa, vui lòng liên hệ tổng đài để biết thêm chi tiết!" });
+        }
         const checkPass = checkPassword(password, user[0].password);
         if (checkPass) {
           const accessToken = generateAccessToken({ id: user[0].id });
           const refreshToken = generateRefreshToken({ id: user[0].id });
-          return res.json({ accessToken, refreshToken, roleId: user[0].roleId });
+          return res.json({ accessToken, refreshToken, user: user[0] });
         } else {
           return res.status(400).json({ message: "Sai tài khoản hoặc mật khẩu!" });
         }
@@ -59,11 +80,18 @@ export class LoginController {
         },
       });
 
-      const loginUser = await getUsers({ email: googleUser.email });
+      const loginUser = await getUsers({ email: googleUser.email }, undefined, {
+        UserRole: {
+          include: {
+            role: true,
+          },
+        },
+      });
 
       if (loginUser.length === 0) {
         const userId = uid();
         const user = await createUser(userId, googleUser.name, "google", googleUser.email, 0, 2);
+        await createUserRole(userId, 2);
         await createSubTableUser(userId);
         await updateProfileById(userId, {
           avatar: googleUser.picture,
@@ -71,7 +99,7 @@ export class LoginController {
         });
         const accessToken = await generateAccessToken({ id: userId });
         const refreshToken = await generateRefreshToken({ id: userId });
-        return res.json({ accessToken, refreshToken, roleId: user.roleId });
+        return res.json({ accessToken, refreshToken, user: { UserRole: 2 } });
       } else {
         await updateProfileById(loginUser[0].id, {
           avatar: googleUser.picture,
@@ -79,7 +107,7 @@ export class LoginController {
         });
         const accessToken = await generateAccessToken({ id: loginUser[0].id });
         const refreshToken = await generateRefreshToken({ id: loginUser[0].id });
-        return res.json({ accessToken, refreshToken, roleId: loginUser[0].roleId });
+        return res.json({ accessToken, refreshToken, user: loginUser[0] });
       }
     } catch (e) {
       res.status(500).json({ error: "An error occurred while fetching users." });

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Auth from "@pages/Auth";
 
 import { ROUTES } from "@constants/routes";
@@ -11,17 +12,23 @@ import HomePage from "@pages/Customer/Home";
 import VerifyAccount from "@pages/VerifyAccount";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { getUserInfoRequest } from "@slices/user.slice";
+import { getUserInfoRequest, logoutRequest } from "@slices/user.slice";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
     if (accessToken && refreshToken) {
       dispatch(getUserInfoRequest());
+    } else if (!accessToken && refreshToken) {
+      dispatch(logoutRequest());
+      navigate(ROUTES.AUTH);
     }
-  }, []);
+  }, [pathname]);
   return (
     <ConfigProvider
       theme={{

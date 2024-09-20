@@ -23,7 +23,6 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
     // Nếu lỗi 401 và yêu cầu chưa được thử lại
     if (error.response?.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -38,6 +37,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         Promise.reject(refreshError);
+        localStorage.removeItem("accessToken");
       }
     }
     return Promise.reject(error);
