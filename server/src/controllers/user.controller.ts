@@ -6,7 +6,6 @@ interface CustomRequest extends Request {
 }
 export class UserController {
   public async index(req: Request, res: Response) {}
-
   public async destroy(req: Request, res: Response) {
     try {
       const { id } = req.params;

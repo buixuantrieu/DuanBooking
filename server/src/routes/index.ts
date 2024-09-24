@@ -5,6 +5,7 @@ import { UserRoute } from "./user.route";
 import { LoginRoute } from "./login.route";
 import { AddressRoute } from "./address.route";
 import { RefreshTokenRoute } from "./refreshToken.route";
+import { RoomRoute } from "./room.route";
 
 export class Route {
   private static path = Router();
@@ -15,6 +16,7 @@ export class Route {
     this.path.use("/login", LoginRoute.draw());
     this.path.use("/users", UserRoute.draw());
     this.path.use("/address", AddressRoute.draw());
+    this.path.use("/room", RoomRoute.draw());
     return this.path;
   }
 

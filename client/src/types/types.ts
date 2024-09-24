@@ -63,6 +63,44 @@ export interface RoleType {
   createdAt?: Date;
   updatedAt?: Date;
 }
+export interface TypeRoomType {
+  id?: number;
+  typeName?: string;
+  description?: string;
+  imageUrl?: string;
+  isDelete?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+export interface AmenityType {
+  id?: number;
+  amenityName?: string;
+  description?: string;
+  imageUrl?: string;
+  isDelete?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+export interface RoomType {
+  id?: number;
+  isApprove?: boolean;
+  image?: string;
+  title?: string;
+  roomName?: string;
+  description?: string;
+  location?: string;
+  status?: number;
+  pricePerNight?: number;
+  isDelete?: boolean;
+  createAt?: Date;
+  roomTypeId?: number;
+  partnerId?: number;
+  provinceId?: number;
+  districtId?: number;
+  wardId?: number;
+  amenities?: number;
+  imageList?: string[];
+}
 
 export interface UserSettingType {
   id: number;

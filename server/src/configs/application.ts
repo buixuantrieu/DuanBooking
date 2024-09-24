@@ -23,7 +23,7 @@ class Application {
   private readonly routes: RouteInfo[] = [];
 
   constructor() {
-    // Cài đặt template engine
+    // Cài đặt template engine 
     this.app.set("views", join(resolve("./app"), "views"));
     this.app.set("view engine", "pug");
 
@@ -53,7 +53,7 @@ class Application {
     );
     this.app.use(flash());
     this.app.use(bodyParser.urlencoded({ extended: false }));
-    // Xuất file tĩnh như CSS, Javascript và các thư viện như Bootstraps, Vue, ...
+
     this.app.use(express.static(join(resolve("app"), "assets")));
     this.app.use("/css", express.static(join(resolve("./node_modules"), "bootstrap/dist/css")));
     this.app.use("/css/font-awesome", express.static(join(resolve("./node_modules"), "font-awesome")));
