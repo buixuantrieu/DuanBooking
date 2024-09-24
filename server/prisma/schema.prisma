@@ -45,6 +45,7 @@ model User {
   userLog        UserLog?
   Partner        Partner?
   UserRole       UserRole[]
+  Room           Room[]
 }
 
 model Profile {
@@ -94,10 +95,75 @@ model Partner {
   userId               String   @unique
 }
 
+model Room {
+  id            Int           @id @default(autoincrement())
+  isApproved    Boolean       @default(false)
+  image         String        @db.Text
+  title         String        @db.Text
+  roomName      String        @db.Text
+  description   String        @db.LongText
+  location      String        @db.Text
+  status        Int           @default(1)
+  pricePerNight Float
+  isDelete      Boolean       @default(false)
+  createAt      DateTime      @default(now())
+  updatedAd     DateTime      @updatedAt
+  roomTypeId    Int
+  roomType      RoomType      @relation(fields: [roomTypeId], references: [id])
+  partnerId     String
+  user          User          @relation(fields: [partnerId], references: [id])
+  provinceId    Int
+  province      Province      @relation(fields: [provinceId], references: [province_id])
+  districtId    Int
+  district      District      @relation(fields: [districtId], references: [district_id])
+  wardId        Int
+  ward          Wards         @relation(fields: [wardId], references: [wards_id])
+  RoomAmenity   RoomAmenity[]
+  RoomImage     RoomImage[]
+}
+
+model RoomType {
+  id          Int      @id @default(autoincrement())
+  typeName    String
+  description String
+  imageUrl    String   @db.Text
+  isDelete    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAd   DateTime @updatedAt
+  Room        Room[]
+}
+
+model Amenity {
+  id          Int           @id @default(autoincrement())
+  amenityName String
+  description String
+  imageUrl    String        @db.Text
+  isDelete    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAd   DateTime      @updatedAt
+  RoomAmenity RoomAmenity[]
+}
+
+model RoomAmenity {
+  id        Int     @id @default(autoincrement())
+  amenityId Int
+  amenity   Amenity @relation(fields: [amenityId], references: [id])
+  roomId    Int
+  room      Room    @relation(fields: [roomId], references: [id])
+}
+
+model RoomImage {
+  id     Int    @id @default(autoincrement())
+  image  String @db.Text
+  roomId Int
+  room   Room   @relation(fields: [roomId], references: [id])
+}
+
 model Province {
   province_id Int        @id @map("province_id")
   name        String     @map("name") @db.VarChar(64)
   District    District[]
+  Room        Room[]
 
   @@map("province")
 }
@@ -108,6 +174,7 @@ model District {
   name        String   @map("name") @db.VarChar(64)
   Province    Province @relation(fields: [province_id], references: [province_id])
   Wards       Wards[]
+  Room        Room[]
 
   @@map("district")
 }
@@ -117,6 +184,7 @@ model Wards {
   district_id Int
   name        String   @map("name") @db.VarChar(64)
   District    District @relation(fields: [district_id], references: [district_id])
+  Room        Room[]
 
   @@map("wards")
 }

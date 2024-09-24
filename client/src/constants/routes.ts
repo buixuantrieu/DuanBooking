@@ -10,7 +10,7 @@ export const ROUTES = {
     BOOKING: "/booking",
     PARTNER_REGISTRATION: "/partner-registration",
     PROFILE: "/profile",
-    USER_INFO: "/profile/user-info",
+    CREATE_POST: "/create-post",
     BOOKING_HISTORY: "/profile/booking-history",
     FAVORITE_HOMES: "/profile/favorite-homes",
     CHANGE_PASSWORD: "/profile/change-password",
