@@ -68,7 +68,7 @@ function Header() {
           <S.NavMobileElement to={ROUTES.USER.HOME}>
             <AiOutlineHome /> Trang chủ
           </S.NavMobileElement>
-          <S.NavMobileElement to={ROUTES.USER.HOME_LIST}>
+          <S.NavMobileElement to={ROUTES.USER.ROOM_LIST}>
             <GiHomeGarage /> Danh sách phòng
           </S.NavMobileElement>
           <S.NavMobileElement to={ROUTES.USER.HOME}>
@@ -88,7 +88,7 @@ function Header() {
       <S.LogoHeader src="src/assets/image/Logo.png" />
       <S.NavContainer>
         <S.NavElement to={ROUTES.USER.HOME}>Trang chủ</S.NavElement>
-        <S.NavElement to={ROUTES.USER.HOME_LIST}>Danh sách phòng</S.NavElement>
+        <S.NavElement to={ROUTES.USER.ROOM_LIST}>Danh sách phòng</S.NavElement>
         <S.NavElement to={ROUTES.USER.HOME}>Diễn đàn</S.NavElement>
         <S.NavElement to={ROUTES.USER.PARTNER_REGISTRATION}>Đăng kí đối tác</S.NavElement>
         <S.NavElement to={ROUTES.USER.ABOUT}>Giới thiệu</S.NavElement>

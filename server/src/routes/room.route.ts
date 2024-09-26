@@ -12,6 +12,7 @@ export class RoomRoute {
     this.path.route("/type").get(this.roomController.getRoomType);
     this.path.route("/amenity").get(this.roomController.getAmenity);
     this.path.route("/").post(authenticateToken, this.roomController.create);
+    this.path.route("/").get(this.roomController.index);
 
     return this.path;
   }

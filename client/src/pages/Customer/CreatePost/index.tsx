@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Card, Row, Form, Col, Input, Button, Select, Upload, Radio, Checkbox } from "antd";
+import { Card, Row, Form, Col, Input, Button, Select, Upload, Radio, Checkbox, InputNumber } from "antd";
 import * as S from "./styles";
 import { Editor } from "@tinymce/tinymce-react";
 import { useEffect, useMemo, useState } from "react";
@@ -116,11 +116,12 @@ function CreatePost() {
             provinceId: values.province,
             wardId: values.ward,
             location: address,
-            pricePerNight: Number(values.pricePerNight),
+            pricePerNight: values.pricePerNight,
             roomTypeId: values.roomTypeId,
             amenities: values.amenities,
             imageList: imageUrls,
           },
+          callback: () => form.resetFields(),
         })
       );
     } catch (error) {
@@ -259,8 +260,21 @@ function CreatePost() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="pricePerNight" label="Giá phòng 1 đêm:">
-                    <Input />
+                  <Form.Item
+                    name="pricePerNight"
+                    label="Giá phòng 1 đêm:"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Không được để trống!",
+                      },
+                      {
+                        type: "number",
+                        message: "Định dạng số!",
+                      },
+                    ]}
+                  >
+                    <InputNumber style={{ width: "100%" }} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -342,7 +356,9 @@ function CreatePost() {
               </Row>
             </Col>
           </Row>
-          <Button htmlType="submit">Tạo bài đăng</Button>
+          <Button loading={amenityList.loading} htmlType="submit">
+            Tạo bài đăng
+          </Button>
         </Form>
       </Card>
     </S.CreatePostWrapper>
