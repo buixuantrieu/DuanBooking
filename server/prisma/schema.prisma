@@ -46,6 +46,7 @@ model User {
   Partner        Partner?
   UserRole       UserRole[]
   Room           Room[]
+  Favorite       Favorite[]
 }
 
 model Profile {
@@ -105,6 +106,7 @@ model Room {
   location      String        @db.Text
   status        Int           @default(1)
   pricePerNight Float
+  view          Int           @default(0)
   isDelete      Boolean       @default(false)
   createAt      DateTime      @default(now())
   updatedAd     DateTime      @updatedAt
@@ -120,6 +122,15 @@ model Room {
   ward          Wards         @relation(fields: [wardId], references: [wards_id])
   RoomAmenity   RoomAmenity[]
   RoomImage     RoomImage[]
+  Favorite      Favorite[]
+}
+
+model Favorite {
+  id     Int    @id @default(autoincrement())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  roomId Int
+  room   Room   @relation(fields: [roomId], references: [id])
 }
 
 model RoomType {

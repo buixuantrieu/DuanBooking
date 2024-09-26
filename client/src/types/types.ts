@@ -8,8 +8,7 @@ type IncludeParams = {
 export interface ProfileType {
   id?: number;
   userId?: number;
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
   phone?: string;
   dateOfBirth?: Date;
   gender?: number;
@@ -81,6 +80,7 @@ export interface AmenityType {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 export interface RoomType {
   id?: number;
   isApprove?: boolean;
@@ -93,6 +93,8 @@ export interface RoomType {
   pricePerNight?: number;
   isDelete?: boolean;
   createAt?: Date;
+  view?: number;
+  roomType?: TypeRoomType;
   roomTypeId?: number;
   partnerId?: number;
   provinceId?: number;
@@ -100,6 +102,8 @@ export interface RoomType {
   wardId?: number;
   amenities?: number;
   imageList?: string[];
+  user?: UserType;
+  Favorite?: FavoriteType[];
 }
 
 export interface UserSettingType {
@@ -109,4 +113,9 @@ export interface UserSettingType {
   isNotification: boolean;
   isReceiveEmail: boolean;
   updatedAt: Date;
+}
+export interface FavoriteType {
+  id: number;
+  userId: string;
+  roomId: number;
 }

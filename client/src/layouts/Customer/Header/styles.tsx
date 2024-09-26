@@ -14,6 +14,7 @@ export const HeaderWrapper = styled.div`
   border-bottom: 1px solid rgba(5, 5, 5, 0.12);
   margin-bottom: 30px;
   position: relative;
+  background-color: white;
   @media ${media.mobile} {
     padding: 8px 0;
   }

@@ -5,8 +5,8 @@ export const CustomerWrapper = styled.div`
   display: flex;
   flex-flow: column;
   min-height: 100vh;
-  padding: 0 30px;
   overflow: hidden;
+  background-color: #fafafa;
 
   @media ${media.mobile} {
     padding: 0 4px;
@@ -20,4 +20,5 @@ export const CustomerWrapper = styled.div`
 `;
 export const CustomerContainer = styled.div`
   flex: 1;
+  padding: 0 30px;
 `;

@@ -8,8 +8,7 @@ export const ContentWrapper = styled.div`
   border-radius: 8px;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   margin-top: 12px;
-  /* height: 500px;
-  overflow-y: auto; */
+  background-color: white;
 `;
 export const InfoWrapper = styled.div`
   width: 700px;

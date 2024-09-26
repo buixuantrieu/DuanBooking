@@ -12,6 +12,11 @@ export interface RoomTypeList {
     loading: boolean;
     error: string | null;
   };
+  roomList: {
+    data: RoomType[];
+    loading: boolean;
+    error: string | null;
+  };
 }
 const initialState: RoomTypeList = {
   roomTypeList: {
@@ -24,12 +29,45 @@ const initialState: RoomTypeList = {
     loading: false,
     error: null,
   },
+  roomList: {
+    data: [],
+    loading: false,
+    error: null,
+  },
 };
 
 export const roleSlice = createSlice({
-  name: "user",
+  name: "room",
   initialState,
   reducers: {
+    getRoomRequest: (
+      state,
+      _action: PayloadAction<{
+        data?: {
+          [key: string]:
+            | string
+            | number
+            | string[]
+            | number[]
+            | undefined
+            | { [key: string]: string | undefined | number[] };
+        };
+      }>
+    ) => {
+      state.roomList.loading = true;
+      state.roomList.error = null;
+    },
+    getRoomSuccess: (state, action) => {
+      const { data } = action.payload;
+      state.roomList.data = data;
+      state.roomList.loading = false;
+      state.roomList.error = null;
+    },
+    getRoomFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomList.error = error;
+      state.roomList.loading = false;
+    },
     getRoomTypeRequest: (state, _action: PayloadAction) => {
       state.roomTypeList.loading = true;
       state.roomTypeList.error = null;
@@ -60,25 +98,26 @@ export const roleSlice = createSlice({
       state.amenityList.error = error;
       state.amenityList.loading = false;
     },
-    createRoomRequest: (state, _action: PayloadAction<{ data: RoomType }>) => {
+    createRoomRequest: (state, _action: PayloadAction<{ data: RoomType; callback: () => void }>) => {
       state.amenityList.loading = true;
-      state.amenityList.error = null;
+      state.roomList.error = null;
     },
-    createRoomSuccess: (state, action) => {
-      const { data } = action.payload;
-      state.amenityList.data = data;
+    createRoomSuccess: (state) => {
       state.amenityList.loading = false;
-      state.amenityList.error = null;
+      state.roomList.error = null;
     },
     createRoomFail: (state, action) => {
       const { error } = action.payload;
-      state.amenityList.error = error;
+      state.roomList.error = error;
       state.amenityList.loading = false;
     },
   },
 });
 
 export const {
+  getRoomRequest,
+  getRoomSuccess,
+  getRoomFail,
   getRoomTypeRequest,
   getRoomTypeSuccess,
   getRoomTypeFail,

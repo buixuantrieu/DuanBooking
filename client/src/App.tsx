@@ -9,6 +9,7 @@ import AdminLayout from "@layouts/Admin";
 import CustomerLayout from "@layouts/Customer";
 import PartnerRegistration from "@pages/Customer/PartnerRegistration";
 import HomePage from "@pages/Customer/Home";
+import RoomList from "@pages/Customer/RoomList";
 import CreatePost from "@pages/Customer/CreatePost";
 import VerifyAccount from "@pages/VerifyAccount";
 import { useEffect } from "react";
@@ -64,6 +65,7 @@ function App() {
           <Route path={ROUTES.USER.PARTNER_REGISTRATION} element={<PartnerRegistration />} />
           <Route path={ROUTES.USER.HOME} element={<HomePage />} />
           <Route path={ROUTES.USER.CREATE_POST} element={<CreatePost />} />
+          <Route path={ROUTES.USER.ROOM_LIST} element={<RoomList />} />
         </Route>
       </Routes>
     </ConfigProvider>

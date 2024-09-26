@@ -8,6 +8,46 @@ export const getAllAmenity = async () => {
   const result = await prisma.amenity.findMany();
   return result;
 };
+export const getAllRoom = async (
+  q: string,
+  amenityList: number[],
+  pricePerNight: number[],
+  roomTypeId: number | undefined,
+  orderBy: { [key: string]: string } | undefined
+) => {
+  const result = await prisma.room.findMany({
+    include: {
+      roomType: true,
+      Favorite: true,
+      user: {
+        include: {
+          profile: true,
+        },
+      },
+    },
+    where: {
+      AND: amenityList.map((amenityId) => ({
+        RoomAmenity: {
+          some: {
+            amenityId: amenityId,
+          },
+        },
+      })),
+      roomName: {
+        contains: q,
+      },
+      pricePerNight: {
+        gte: pricePerNight[0],
+        lte: pricePerNight[1],
+      },
+      roomTypeId: roomTypeId,
+    },
+    orderBy: {
+      ...orderBy,
+    },
+  });
+  return result;
+};
 
 export const createRoom = async (
   title: string,
