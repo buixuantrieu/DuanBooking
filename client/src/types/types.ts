@@ -16,6 +16,11 @@ export interface ProfileType {
   address?: string;
   updatedAt?: Date;
 }
+export interface RoomImageType {
+  id?: number;
+  image?: string;
+  roomId?: number;
+}
 export interface UserType {
   id?: string;
   roleId?: number;
@@ -104,6 +109,8 @@ export interface RoomType {
   imageList?: string[];
   user?: UserType;
   Favorite?: FavoriteType[];
+  RoomImage?: RoomImageType[] | undefined;
+  Review?: ReviewType[];
 }
 
 export interface UserSettingType {
@@ -118,4 +125,33 @@ export interface FavoriteType {
   id: number;
   userId: string;
   roomId: number;
+}
+export interface ReviewType {
+  id?: number;
+  roomId?: number;
+  userId?: string;
+  rate?: number;
+  content?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  user?: UserType;
+}
+export interface CommentType {
+  id?: number;
+  roomId?: number;
+  userId?: string;
+  content?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  user?: UserType;
+}
+export interface InfoBookingTemporary {
+  roomId?: number | undefined;
+  image?: string | undefined;
+  total?: number | undefined;
+  price?: number | undefined;
+  countDay?: number | undefined;
+  checkIn?: string | undefined;
+  checkOut?: string | undefined;
+  roomName?: string | undefined;
 }

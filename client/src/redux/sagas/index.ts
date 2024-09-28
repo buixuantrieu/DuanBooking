@@ -3,10 +3,12 @@ import userSaga from "./user.saga";
 import roleSaga from "./role.saga";
 import addressSaga from "./address.saga";
 import roomSaga from "./room.saga";
+import rateSaga from "./rate.saga";
 
 export default function* rootSaga() {
   yield fork(userSaga);
   yield fork(roleSaga);
   yield fork(addressSaga);
   yield fork(roomSaga);
+  yield fork(rateSaga);
 }

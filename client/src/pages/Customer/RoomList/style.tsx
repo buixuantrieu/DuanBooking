@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 
 interface Active {
@@ -117,9 +118,11 @@ export const TypeRoomTitle = styled.div`
   object-fit: cover;
   margin-bottom: 2px;
 `;
-export const RoomTitle = styled.div`
+export const RoomTitle = styled(Link)`
   font-weight: bold;
   font-size: 18px;
+  display: block;
+  color: black;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

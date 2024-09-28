@@ -217,7 +217,7 @@ function CreatePost() {
                       },
                     ]}
                   >
-                    <Upload listType="picture" beforeUpload={() => false} maxCount={10}>
+                    <Upload multiple listType="picture" beforeUpload={() => false} maxCount={10}>
                       <Button icon={<FaCloudUploadAlt />}>Bấm để tải ảnh lên</Button>
                     </Upload>
                   </Form.Item>

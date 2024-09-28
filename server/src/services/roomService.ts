@@ -19,6 +19,7 @@ export const getAllRoom = async (
     include: {
       roomType: true,
       Favorite: true,
+      Review: true,
       user: {
         include: {
           profile: true,
@@ -103,4 +104,22 @@ export const createRoom = async (
 
     return room;
   });
+};
+
+export const getRoomDetailById = async (id: number) => {
+  const result = await prisma.room.findFirst({
+    where: {
+      id,
+    },
+    include: {
+      RoomImage: true,
+      roomType: true,
+      user: {
+        include: {
+          profile: true,
+        },
+      },
+    },
+  });
+  return result;
 };

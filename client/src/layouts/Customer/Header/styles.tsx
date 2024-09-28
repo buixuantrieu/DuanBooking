@@ -9,7 +9,7 @@ interface ShowMenu {
 export const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 8px;
+  padding: 8px 20px;
   align-items: center;
   border-bottom: 1px solid rgba(5, 5, 5, 0.12);
   margin-bottom: 30px;
