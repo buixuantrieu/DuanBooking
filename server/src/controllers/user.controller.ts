@@ -35,9 +35,10 @@ export class UserController {
         districtId,
         wardId,
         phone,
+        fullName,
       } = req.body;
       const partner = await createPartner(userId, paymentAccountMethod, paymentAccountType, paymentAccountInfo);
-      await updateProfileById(userId, { address, provinceId, districtId, wardId, phone });
+      await updateProfileById(userId, { address, provinceId, districtId, wardId, phone, fullName });
       return res.json(partner);
     } catch (e) {
       return res.status(500).json({ message: "Internal Server Error" });

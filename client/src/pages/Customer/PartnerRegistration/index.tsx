@@ -336,6 +336,7 @@ function PartnerRegistration() {
       districtId: formData.district,
       wardId: formData.ward,
       phone: formData.phone,
+      fullName: formData.fullName,
     };
     dispatch(
       registerPartnerRequest({

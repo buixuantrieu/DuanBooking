@@ -12,6 +12,8 @@ import HomePage from "@pages/Customer/Home";
 import RoomList from "@pages/Customer/RoomList";
 import CreatePost from "@pages/Customer/CreatePost";
 import VerifyAccount from "@pages/VerifyAccount";
+import Booking from "@pages/Customer/Booking";
+import RoomDetail from "@pages/Customer/RoomDetail";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getUserInfoRequest, logoutRequest } from "@slices/user.slice";
@@ -66,6 +68,8 @@ function App() {
           <Route path={ROUTES.USER.HOME} element={<HomePage />} />
           <Route path={ROUTES.USER.CREATE_POST} element={<CreatePost />} />
           <Route path={ROUTES.USER.ROOM_LIST} element={<RoomList />} />
+          <Route path={ROUTES.USER.ROOM_DETAIL} element={<RoomDetail />} />
+          <Route path={ROUTES.USER.BOOKING} element={<Booking />} />
         </Route>
       </Routes>
     </ConfigProvider>

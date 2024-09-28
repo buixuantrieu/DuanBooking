@@ -23,7 +23,7 @@ class Application {
   private readonly routes: RouteInfo[] = [];
 
   constructor() {
-    // Cài đặt template engine 
+    // Cài đặt template engine
     this.app.set("views", join(resolve("./app"), "views"));
     this.app.set("view engine", "pug");
 

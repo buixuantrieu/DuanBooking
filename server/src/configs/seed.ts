@@ -19,9 +19,32 @@ const addType = async () => {
   try {
     await prisma.roomType.createMany({
       data: [
-        { id: 1, typeName: "Khung cảnh tuyệt vời", description: "View khung cảnh tuyệt vời", imageUrl: "" },
-        { id: 2, typeName: "Hướng biển", description: "View hướng biển", imageUrl: "" },
+        {
+          id: 1,
+          typeName: "Khung cảnh tuyệt vời",
+          description: "View khung cảnh tuyệt vời",
+          imageUrl: "https://a0.muscache.com/pictures/3b1eb541-46d9-4bef-abc4-c37d77e3c21b.jpg",
+        },
+        {
+          id: 2,
+          typeName: "Hướng biển",
+          description: "View hướng biển",
+          imageUrl: "https://a0.muscache.com/pictures/bcd1adc0-5cee-4d7a-85ec-f6730b0f8d0c.jpg",
+        },
+        {
+          id: 3,
+          typeName: "Nhà trên cây",
+          description: "Nhà trên cây",
+          imageUrl: "https://a0.muscache.com/pictures/4d4a4eba-c7e4-43eb-9ce2-95e1d200d10e.jpg",
+        },
+        {
+          id: 4,
+          typeName: "Nhà khung chữ A",
+          description: "Nhà khung chữ A",
+          imageUrl: "https://a0.muscache.com/pictures/1d477273-96d6-4819-9bda-9085f809dad3.jpg",
+        },
       ],
+
       skipDuplicates: true,
     });
     console.log("Đã thêm home type thành công.");

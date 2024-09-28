@@ -6,7 +6,7 @@ export const ROUTES = {
     ABOUT: "/about",
     CONTACT: "/contact",
     ROOM_LIST: "/room",
-    HOME_DETAIL: "/homes/:id",
+    ROOM_DETAIL: "/room/:id",
     BOOKING: "/booking",
     PARTNER_REGISTRATION: "/partner-registration",
     PROFILE: "/profile",

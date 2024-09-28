@@ -85,7 +85,7 @@ function Header() {
           </S.NavMobileElement>
         </S.MenuNavMobile>
       </S.MenuContainer>
-      <S.LogoHeader src="src/assets/image/Logo.png" />
+      <S.LogoHeader src="https://firebasestorage.googleapis.com/v0/b/sdsd-f6fec.appspot.com/o/images%2FLogo.png?alt=media&token=085a122d-7460-4e37-800c-68cf30ee9a08" />
       <S.NavContainer>
         <S.NavElement to={ROUTES.USER.HOME}>Trang chủ</S.NavElement>
         <S.NavElement to={ROUTES.USER.ROOM_LIST}>Danh sách phòng</S.NavElement>
@@ -95,7 +95,7 @@ function Header() {
         <S.NavElement to={ROUTES.USER.CONTACT}>Liên hệ</S.NavElement>
       </S.NavContainer>
       <S.HeaderControl>
-        {userInfo.data.id ? (
+        {userInfo.data?.id ? (
           <>
             <S.Icon>
               <IoMdNotificationsOutline />
@@ -114,7 +114,9 @@ function Header() {
             </S.IconMenu>
           </>
         ) : (
-          <CiLogin style={{ cursor: "pointer" }} />
+          <Link to={ROUTES.AUTH}>
+            <CiLogin style={{ cursor: "pointer" }} />
+          </Link>
         )}
       </S.HeaderControl>
     </S.HeaderWrapper>

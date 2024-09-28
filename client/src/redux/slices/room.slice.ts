@@ -17,6 +17,11 @@ export interface RoomTypeList {
     loading: boolean;
     error: string | null;
   };
+  roomDetail: {
+    data: RoomType;
+    loading: boolean;
+    error: string | null;
+  };
 }
 const initialState: RoomTypeList = {
   roomTypeList: {
@@ -31,6 +36,11 @@ const initialState: RoomTypeList = {
   },
   roomList: {
     data: [],
+    loading: false,
+    error: null,
+  },
+  roomDetail: {
+    data: {},
     loading: false,
     error: null,
   },
@@ -72,6 +82,7 @@ export const roleSlice = createSlice({
       state.roomTypeList.loading = true;
       state.roomTypeList.error = null;
     },
+
     getRoomTypeSuccess: (state, action) => {
       const { data } = action.payload;
       state.roomTypeList.data = data;
@@ -97,6 +108,21 @@ export const roleSlice = createSlice({
       const { error } = action.payload;
       state.amenityList.error = error;
       state.amenityList.loading = false;
+    },
+    getRoomDetailRequest: (state, _action: PayloadAction<{ id: number }>) => {
+      state.roomDetail.loading = true;
+      state.roomDetail.error = null;
+    },
+    getRoomDetailSuccess: (state, action) => {
+      const { data } = action.payload;
+      state.roomDetail.data = data;
+      state.roomDetail.loading = false;
+      state.roomDetail.error = null;
+    },
+    getRoomDetailFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomDetail.error = error;
+      state.roomDetail.loading = false;
     },
     createRoomRequest: (state, _action: PayloadAction<{ data: RoomType; callback: () => void }>) => {
       state.amenityList.loading = true;
@@ -127,6 +153,9 @@ export const {
   createRoomRequest,
   createRoomSuccess,
   createRoomFail,
+  getRoomDetailRequest,
+  getRoomDetailSuccess,
+  getRoomDetailFail,
 } = roleSlice.actions;
 
 export default roleSlice.reducer;

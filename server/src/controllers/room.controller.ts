@@ -1,4 +1,4 @@
-import { createRoom, getAllAmenity, getAllRoom, getAllRoomType } from "@services/roomService";
+import { createRoom, getAllAmenity, getAllRoom, getAllRoomType, getRoomDetailById } from "@services/roomService";
 import { Request, Response } from "express";
 
 interface CustomRequest extends Request {
@@ -33,6 +33,17 @@ export class RoomController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  public async show(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const room = await getRoomDetailById(Number(id));
+      res.json(room);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   public async getRoomType(req: Request, res: Response) {
     try {
       const result = await getAllRoomType();

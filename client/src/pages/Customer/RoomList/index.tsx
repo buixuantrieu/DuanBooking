@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { GiMoneyStack } from "react-icons/gi";
 import { MdOutlineFavorite } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
-import { useLocation, useNavigate } from "react-router-dom";
+import { generatePath, useLocation, useNavigate } from "react-router-dom";
 import qs from "qs";
 
 import { getAmenityRequest, getRoomTypeRequest, getRoomRequest } from "@slices/room.slice";
@@ -49,13 +49,17 @@ function RoomList() {
   const renderRoomList = useMemo(
     () =>
       roomList.data.map((item, index) => {
+        const rate = item.Review?.reduce((total, item) => (total += Number(item.rate)), 0);
+        const valueRate = Number(rate) / Number(item.Review?.length);
+
         return (
           <Col key={index} span={8}>
             <S.BoxRoomContainer>
               <S.RoomImage src={item.image} />
               <S.TypeRoomTitle>{item.roomType?.typeName}</S.TypeRoomTitle>
-              <S.RoomTitle>{item.roomName}</S.RoomTitle>
-              <Rate style={{ fontSize: 16, color: "#faad14" }} disabled value={4.5} allowHalf />
+              <S.RoomTitle to={generatePath(ROUTES.USER.ROOM_DETAIL, { id: item.id })}>{item.roomName}</S.RoomTitle>
+              <Rate style={{ fontSize: 16, color: "#ee4d2d" }} disabled value={valueRate} allowHalf /> /
+              <span style={{ fontSize: 10 }}> ( {item.Review?.length} đánh giá )</span>
               <S.LabelContainer>
                 <S.RoomLabel>Địa chỉ: </S.RoomLabel>
                 <S.Address> {item.location}</S.Address>

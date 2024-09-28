@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { takeEvery, put, debounce } from "redux-saga/effects";
+import { takeEvery, put } from "redux-saga/effects";
 
 import {
   getRoomTypeRequest,
@@ -14,6 +14,9 @@ import {
   getRoomRequest,
   getRoomSuccess,
   getRoomFail,
+  getRoomDetailRequest,
+  getRoomDetailSuccess,
+  getRoomDetailFail,
 } from "@slices/room.slice";
 import { AnyAction } from "redux-saga";
 import axios from "axios";
@@ -29,6 +32,15 @@ function* getRoomSaga(action: AnyAction): Generator {
     yield put(getRoomSuccess({ data: result.data }));
   } catch (e) {
     yield put(getRoomFail({ error: "Lỗi" }));
+  }
+}
+function* getRoomDetailSaga(action: AnyAction): Generator {
+  try {
+    const { id } = action.payload;
+    const result = yield axios.get(`http://localhost:3000/room/${id}`);
+    yield put(getRoomDetailSuccess({ data: result.data }));
+  } catch (e) {
+    yield put(getRoomDetailFail({ error: "Lỗi" }));
   }
 }
 
@@ -64,5 +76,6 @@ export default function* userSaga() {
   yield takeEvery(getRoomTypeRequest, getRoomTypeSaga);
   yield takeEvery(getAmenityRequest, getAmenitySaga);
   yield takeEvery(createRoomRequest, createRoomSaga);
-  yield debounce(300, getRoomRequest, getRoomSaga);
+  yield takeEvery(getRoomRequest, getRoomSaga);
+  yield takeEvery(getRoomDetailRequest, getRoomDetailSaga);
 }
