@@ -1,10 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as S from "./style";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { useEffect, useMemo } from "react";
-import { getBookingByUserIdRequest } from "@slices/booking.slice";
+import { getBookingByUserIdRequest, updateCreateBookingRequest } from "@slices/booking.slice";
 import dayjs from "dayjs";
 import Paypal from "../../../Paypal";
+import { Empty } from "antd";
 function BookingHistory() {
   const dispatch = useDispatch();
 
@@ -62,7 +64,22 @@ function BookingHistory() {
             </S.ContentContainer>
             {item.Payment?.status === 0 && (
               <div style={{ width: 100, marginTop: 16 }}>
-                <Paypal createBooking={() => null} callback={() => null} amount={Number(item.totalPrice)} />
+                <Paypal
+                  createBooking={() => null}
+                  callback={() =>
+                    dispatch(
+                      updateCreateBookingRequest({
+                        data: {
+                          checkIn: item.checkIn,
+                          checkOut: item.checkOut,
+                          customerId: item.customerId,
+                          roomId: item.roomId,
+                        },
+                      })
+                    )
+                  }
+                  amount={Number(item.totalPrice)}
+                />
               </div>
             )}
           </S.BoxContainer>
@@ -73,7 +90,11 @@ function BookingHistory() {
   return (
     <S.BookingHistoryWrapper>
       <S.BookingHistoryTitle>Lịch sử đặt phòng</S.BookingHistoryTitle>
-      {renderBookingList}
+      {bookingList.data.length == 0 ? (
+        <Empty style={{ marginTop: 100 }} description="Bạn chưa đặt phòng nào cả!" />
+      ) : (
+        renderBookingList
+      )}
     </S.BookingHistoryWrapper>
   );
 }

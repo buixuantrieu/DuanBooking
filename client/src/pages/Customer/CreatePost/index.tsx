@@ -13,11 +13,14 @@ import { storage } from "../../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { RootState } from "store";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { ROUTES } from "@constants/routes";
 
 function CreatePost() {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getRoomTypeRequest());
@@ -26,9 +29,15 @@ function CreatePost() {
   }, []);
   const [contentProduct, setContentProduct] = useState("");
   const { provinceList } = useSelector((state: RootState) => state.address);
+  const { userInfo } = useSelector((state: RootState) => state.user);
   const { districtList } = useSelector((state: RootState) => state.address);
   const { wardList } = useSelector((state: RootState) => state.address);
   const { roomTypeList, amenityList } = useSelector((state: RootState) => state.room);
+  useEffect(() => {
+    if (!userInfo.data.Partner?.isApproved) {
+      navigate(ROUTES.USER.HOME);
+    }
+  });
 
   const renderRoomTypeOptions = useMemo(() => {
     return roomTypeList.data.map((item) => (

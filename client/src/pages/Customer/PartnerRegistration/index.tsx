@@ -33,6 +33,12 @@ function PartnerRegistration() {
   const { provinceList } = useSelector((state: RootState) => state.address);
   const { districtList } = useSelector((state: RootState) => state.address);
   const { wardList } = useSelector((state: RootState) => state.address);
+  useEffect(() => {
+    if (userInfo.data.Partner?.id) {
+      navigate(ROUTES.USER.HOME);
+      notification.warning({ message: "Bạn đã đăng kí đối tác rồi!" });
+    }
+  }, []);
 
   const { province, district, ward } = formData;
   const provinceData = provinceList.data.find((item) => item.province_id === province);

@@ -53,7 +53,7 @@ function* getBookingByRoomIdSaga(action: AnyAction): Generator {
     yield put(getBookingByRoomIdFail({ error: "lỗi" }));
   }
 }
-function* getBookingByUserIdSaga(action: AnyAction): Generator {
+function* getBookingByUserIdSaga(_action: AnyAction): Generator {
   try {
     const result = yield apiClient.get("http://localhost:3000/booking/userId");
     yield put(getBookingByUserIdSuccess({ data: result.data }));

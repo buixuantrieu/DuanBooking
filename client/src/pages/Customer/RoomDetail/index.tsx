@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { getRoomDetailRequest } from "@slices/room.slice";
 import { createCommentRequest, createReviewRequest, getCommentRequest, getReviewRequest } from "@slices/rate.slice";
 import * as S from "./style";
-import { GiMoneyStack } from "react-icons/gi";
 
 import { Row, Col, Card, Tabs, Form, Input, Button, Rate, notification, DatePicker } from "antd";
 import { RootState } from "store";
@@ -37,6 +36,7 @@ function RoomDetail() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const { roomDetail } = useSelector((state: RootState) => state.room);
+  const { userInfo } = useSelector((state: RootState) => state.user);
   const { bookingList } = useSelector((state: RootState) => state.booking);
   const { commentList, reviewList } = useSelector((state: RootState) => state.rate);
 
@@ -62,10 +62,6 @@ function RoomDetail() {
     dispatch(getReviewRequest({ id }));
     dispatch(getBookingByRoomIdRequest({ roomId: Number(id) }));
   }, []);
-  // const bookedDates = [
-  //   [dayjs("2024-09-28"), dayjs("2024-09-30")],
-  //   [dayjs("2024-10-4"), dayjs("2024-10-07")],
-  // ];
 
   const bookedDates = useMemo(
     () =>
@@ -197,12 +193,26 @@ function RoomDetail() {
       price: roomDetail.data.pricePerNight,
       roomName: roomDetail.data.roomName,
     };
-    if (totalPrice !== 0) {
+    if (!userInfo.data.id) {
+      notification.warning({ message: "Bạn cần đăng nhập để thực hiện chức năng này" });
+    } else if (totalPrice !== 0) {
       dispatch(addInfoBookingTemporary({ data: infoBooking, callback: () => navigate(ROUTES.USER.BOOKING) }));
     } else {
       notification.warning({ message: "Ngày nhận phòng và trả phòng không thể trùng 1 ngày được!" });
     }
   };
+
+  const checkRate = useMemo(() => {
+    return userInfo.data.Booking?.filter((item) => item.roomId == id);
+  }, [userInfo.data, id]);
+
+  const checkReview = useMemo(
+    () =>
+      reviewList.data.filter((item) => {
+        return item.roomId == id && item.userId == userInfo.data?.id;
+      }),
+    [reviewList.data, userInfo.data]
+  );
 
   const handleAddComment = (value: { content: string | undefined }) => {
     const dataComment = { content: value.content, roomId: id };
@@ -261,12 +271,9 @@ function RoomDetail() {
           <S.TotalPrice>
             <S.LabelTotal>Giá thuê phòng:</S.LabelTotal>
             <S.PriceTotal>
-              {roomDetail.data.pricePerNight?.toLocaleString()}{" "}
-              <span style={{ color: "#3f6600" }}>
-                <GiMoneyStack />
-              </span>
+              <span style={{ fontWeight: 500 }}>{roomDetail.data.pricePerNight?.toLocaleString("en-US")}</span>.00$
               <i style={{ color: "gray", fontWeight: 300 }}>/</i>
-              <p style={{ fontSize: 12, color: "gray", transform: "translateY(14px)", fontWeight: 300 }}>ngày</p>
+              <p style={{ fontSize: 10, color: "gray", transform: "translateY(14px)", fontWeight: 300 }}>ngày</p>
             </S.PriceTotal>
           </S.TotalPrice>
           <Form form={formBooking} onFinish={handleBooking}>
@@ -288,21 +295,23 @@ function RoomDetail() {
                 placeholder={["Ngày nhận phòng", "Ngày trả phòng"]}
               />
             </Form.Item>
-            <S.PriceContainer>
-              <S.LabelPrice>Tổng tiền:</S.LabelPrice>
-              <S.Price>
-                {(Number(roomDetail.data.pricePerNight) * totalPrice).toLocaleString()}
-                <span style={{ color: "#3f6600" }}>
-                  <GiMoneyStack />
+            <S.TotalPrice>
+              <S.LabelTotal>Tổng tiền:</S.LabelTotal>
+              <S.PriceTotal>
+                <span style={{ fontWeight: 600, color: "#a8071a" }}>
+                  {(Number(roomDetail.data.pricePerNight) * totalPrice).toLocaleString("en-US")} .00$
                 </span>
                 {totalPrice !== 0 && (
                   <>
-                    <i style={{ color: "gray" }}>/</i>
-                    <p style={{ fontSize: 12, color: "gray", transform: "translateY(14px)" }}> {totalPrice} ngày</p>
+                    <i style={{ color: "gray", fontWeight: 300 }}>/</i>
+                    <p style={{ fontSize: 10, color: "gray", fontWeight: 300, transform: "translateY(14px)" }}>
+                      {" "}
+                      {totalPrice} ngày
+                    </p>
                   </>
                 )}
-              </S.Price>
-            </S.PriceContainer>
+              </S.PriceTotal>
+            </S.TotalPrice>
             <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
               Đặt phòng
             </Button>
@@ -318,20 +327,24 @@ function RoomDetail() {
                 children: (
                   <>
                     <S.FormCommentWrapper>
-                      <Form form={formComment} onFinish={handleAddComment}>
-                        <Form.Item
-                          name="content"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Không được để trống!",
-                            },
-                          ]}
-                        >
-                          <Input.TextArea style={{ height: 100 }} />
-                        </Form.Item>
-                        <Button htmlType="submit">Gửi bình luận</Button>
-                      </Form>
+                      {userInfo.data.id ? (
+                        <Form form={formComment} onFinish={handleAddComment}>
+                          <Form.Item
+                            name="content"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Không được để trống!",
+                              },
+                            ]}
+                          >
+                            <Input.TextArea style={{ height: 100 }} />
+                          </Form.Item>
+                          <Button htmlType="submit">Gửi bình luận</Button>
+                        </Form>
+                      ) : (
+                        "Bạn cần đăng nhập để có thể bình luận"
+                      )}
                     </S.FormCommentWrapper>
                     {renderComment}
                   </>
@@ -343,31 +356,39 @@ function RoomDetail() {
                 children: (
                   <>
                     <S.FormCommentWrapper>
-                      <Form form={formReview} onFinish={handelAddReview}>
-                        <Form.Item
-                          name="rate"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng chọn sao!",
-                            },
-                          ]}
-                        >
-                          <Rate style={{ color: "#ee4d2d" }} />
-                        </Form.Item>
-                        <Form.Item
-                          name="content"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Không được để trống!",
-                            },
-                          ]}
-                        >
-                          <Input.TextArea style={{ height: 100 }} />
-                        </Form.Item>
-                        <Button htmlType="submit">Gửi đánh giá</Button>
-                      </Form>
+                      {!userInfo.data.id ? (
+                        "Bạn cần đăng nhập để có thể đánh giá"
+                      ) : checkRate?.length == 0 ? (
+                        "Bạn cần đặt phòng thành công mới có thể đánh giá"
+                      ) : checkReview.length != 0 ? (
+                        "Bạn đã đánh giá về phòng này rồi!"
+                      ) : (
+                        <Form form={formReview} onFinish={handelAddReview}>
+                          <Form.Item
+                            name="rate"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn sao!",
+                              },
+                            ]}
+                          >
+                            <Rate style={{ color: "#ee4d2d" }} />
+                          </Form.Item>
+                          <Form.Item
+                            name="content"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Không được để trống!",
+                              },
+                            ]}
+                          >
+                            <Input.TextArea style={{ height: 100 }} />
+                          </Form.Item>
+                          <Button htmlType="submit">Gửi đánh giá</Button>
+                        </Form>
+                      )}
                     </S.FormCommentWrapper>
                     {renderReview}
                   </>

@@ -3,7 +3,6 @@ import { Row, Col, Card, Checkbox, Input, Slider, Select, Rate, Button } from "a
 import * as S from "./style";
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GiMoneyStack } from "react-icons/gi";
 import { MdOutlineFavorite } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { generatePath, useLocation, useNavigate } from "react-router-dom";
@@ -70,8 +69,7 @@ function RoomList() {
               </S.LabelContainer>
               <S.LabelContainer>
                 <S.RoomLabel>Giá thuê:</S.RoomLabel>
-                <S.PricePerNight>{item.pricePerNight?.toLocaleString()}</S.PricePerNight>
-                <GiMoneyStack style={{ fontSize: 18 }} />/
+                <S.PricePerNight>{item.pricePerNight?.toLocaleString("en-US")}.00$</S.PricePerNight>/
                 <span style={{ color: "gray", fontSize: 10, transform: "translateY(10px)" }}>đêm</span>
               </S.LabelContainer>
               <S.IconWrapper>

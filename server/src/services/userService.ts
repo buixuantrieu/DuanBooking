@@ -44,7 +44,12 @@ export const createUser = async (
   return user;
 };
 export const loginUser = async (userName: string, password: string) => {
-  const user = await prisma.user.findFirst({ where: { userName } });
+  const user = await prisma.user.findFirst({
+    where: { userName },
+    include: {
+      UserRole: true,
+    },
+  });
   if (user) {
     const checkPass = await checkPassword(password, user.password);
     if (checkPass) {
@@ -137,6 +142,17 @@ export const getUserDetailById = async (id: string) => {
       id,
     },
     include: {
+      Partner: true,
+      Booking: {
+        where: {
+          Payment: {
+            status: 1,
+          },
+        },
+        include: {
+          Payment: true,
+        },
+      },
       profile: true,
       userLog: true,
       userSetting: true,

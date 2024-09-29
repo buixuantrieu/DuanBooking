@@ -141,7 +141,7 @@ export const LabelPrice = styled.div`
 `;
 export const Price = styled.div`
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
   color: #a8071a;
   display: flex;
   gap: 4px;
@@ -152,11 +152,12 @@ export const TotalPrice = styled.div`
   gap: 8px;
   align-items: end;
   margin-bottom: 20px;
-  margin-top: 40px;
+  margin-top: 24px;
   font-size: 16px;
 `;
 export const LabelTotal = styled.div`
   font-weight: 500;
+  font-size: 14px;
 `;
 export const PriceTotal = styled.div`
   display: flex;

@@ -83,9 +83,14 @@ function* loginUserSaga(action: AnyAction): Generator {
     yield localStorage.setItem("accessToken", result.data.accessToken);
     yield localStorage.setItem("refreshToken", result.data.refreshToken);
 
+    const check = yield result.data.user.UserRole.filter((role: { roleId: number }) => Number(role.roleId) == 1);
     yield put(getUserInfoRequest());
     yield put(loginUserSuccess());
-    yield callback(result.data.user.UserRole[0].roleId);
+    if (check.length != 0) {
+      yield callback(1);
+    } else {
+      yield callback(0);
+    }
     yield notification.success({ message: "Đăng nhập thành công!" });
   } catch (e) {
     yield put(loginUserFailure({ error: "Sai tài khoản hoặc mật khẩu" }));
@@ -100,9 +105,15 @@ function* loginWithGoogleSaga(action: AnyAction): Generator {
 
     yield localStorage.setItem("accessToken", result.data.accessToken);
     yield localStorage.setItem("refreshToken", result.data.refreshToken);
+
+    const check = yield result.data.user.UserRole.filter((role: { roleId: number }) => Number(role.roleId) == 1);
     yield put(getUserInfoRequest());
     yield put(loginUserSuccess());
-    yield callback(result.data.user.UserRole[0].roleId);
+    if (check.length != 0) {
+      yield callback(1);
+    } else {
+      yield callback(0);
+    }
     yield notification.success({ message: "Đăng nhập thành công !" });
   } catch (e) {
     yield notification.error({ message: "Login with Google Failed!" });

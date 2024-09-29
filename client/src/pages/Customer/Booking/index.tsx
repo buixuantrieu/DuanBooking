@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@constants/routes";
-import { Row, Col, Card, Form, Input, Button, notification } from "antd";
+import { Row, Col, Card, Form, Input, Button } from "antd";
 import * as S from "./style";
 import dayjs from "dayjs";
 import { createBookingRequest, updateCreateBookingRequest } from "@slices/booking.slice";
@@ -67,10 +67,7 @@ function Booking() {
           customerId: userInfo.data.id,
           roomId: infoBookingTemporary.data.roomId,
         },
-        callback: () => {
-          navigate(ROUTES.USER.ROOM_LIST);
-          notification.success({ message: "Chúc mừng bạn đã đặt phònh thành công!" });
-        },
+        callback: () => {},
       })
     );
   };
@@ -87,11 +84,15 @@ function Booking() {
             </S.InfoContainer>
             <S.InfoContainer>
               <S.Label>Ngày nhận phòng:</S.Label>
-              <S.InfoContent>{dayjs(infoBookingTemporary.data.checkIn).format("DD/MM/YYYY")}</S.InfoContent>
+              <S.InfoContent>
+                {dayjs(infoBookingTemporary.data.checkIn).subtract(1, "day").format("DD/MM/YYYY")}
+              </S.InfoContent>
             </S.InfoContainer>
             <S.InfoContainer>
               <S.Label>Ngày trả phòng:</S.Label>
-              <S.InfoContent>{dayjs(infoBookingTemporary.data.checkOut).format("DD/MM/YYYY")}</S.InfoContent>
+              <S.InfoContent>
+                {dayjs(infoBookingTemporary.data.checkOut).subtract(1, "day").format("DD/MM/YYYY")}
+              </S.InfoContent>
             </S.InfoContainer>
             <S.InfoContainer>
               <S.Label>Số ngày ở:</S.Label>
@@ -161,7 +162,11 @@ function Booking() {
                   disabled={isValidate}
                   style={{ height: "max-content", width: "100%", border: "none", background: "transparent" }}
                 >
-                  <Paypal callback={handleUpdateBooking} createBooking={handleBooking} amount={Number(10)} />
+                  <Paypal
+                    callback={handleUpdateBooking}
+                    createBooking={handleBooking}
+                    amount={Number(infoBookingTemporary.data.price)}
+                  />
                 </Button>
               </Row>
             </Form>

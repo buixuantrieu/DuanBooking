@@ -45,6 +45,19 @@ export interface UserType {
   include?: IncludeParams;
   profile?: ProfileType;
   UserRole?: UserRole[] | undefined;
+  Partner?: PartnerType;
+  Booking?: BookingType[];
+}
+
+export interface PartnerType {
+  id?: number;
+  isApproved?: boolean;
+  paymentAccountMethod?: string;
+  paymentAccountType?: string;
+  paymentAccountInfo?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  userId?: string;
 }
 export interface UserRole {
   id?: number;

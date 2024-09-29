@@ -68,7 +68,7 @@ export const bookingSlice = createSlice({
       state.bookingList.loading = false;
       state.bookingList.error = error;
     },
-    updateCreateBookingRequest: (state, action: PayloadAction<{ data: BookingType; callback?: () => void }>) => {
+    updateCreateBookingRequest: (state, _action: PayloadAction<{ data: BookingType; callback?: () => void }>) => {
       state.bookingList.loading = true;
       state.bookingList.error = null;
     },

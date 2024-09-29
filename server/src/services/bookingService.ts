@@ -2,6 +2,7 @@ import prisma from "@prismaClient";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { sendMail } from "./userService";
 
 // Kích hoạt plugin
 dayjs.extend(utc);
@@ -63,6 +64,15 @@ export const updateCreateBooking = async (checkIn: Date, checkOut: Date, custome
     },
     include: {
       Payment: true,
+      room: {
+        include: {
+          user: {
+            include: {
+              profile: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -153,6 +163,55 @@ export const updateCreateBooking = async (checkIn: Date, checkOut: Date, custome
       },
     });
   }
+  if (check) {
+    const dateCheckIn = new Date(check.checkIn);
+    const dateCheckOut = new Date(check.checkOut);
+    const contentHtml = `
+      <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+      <div style="max-width: 600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+          <h1 style="color: #6f76b5;">Xác Nhận Đặt Phòng Thành Công</h1>
+          <p>Chào <strong>${check.customerName}</strong>,</p>
+          <p>Cảm ơn bạn đã đặt phòng trên MingSuBooking của chúng tôi. Dưới đây là thông tin chi tiết về đặt phòng của bạn:</p>
+
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+              <tr>
+                  <th style="border: 1px solid #ddd; padding: 8px; background-color: #6f76b5; color: white;">Thông Tin</th>
+                  <th style="border: 1px solid #ddd; padding: 8px; background-color: #6f76b5; color: white;">Chi Tiết</th>
+              </tr>
+              <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">Tên khách sạn</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${check.room.roomName}</td>
+              </tr>
+              <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">Ngày nhận phòng</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">2:00 - ${dayjs(dateCheckIn)
+                    .subtract(1, "day")
+                    .format("DD/MM/YYYY")}</td>
+              </tr>
+              <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">Ngày trả phòng</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">12:00 - ${dayjs(dateCheckOut)
+                    .subtract(1, "day")
+                    .format("DD/MM/YYYY")}</td>
+              </tr>
+              <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px;">Tổng Chi Phí</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${check.totalPrice.toLocaleString("en-US")}.00$</td>
+              </tr>
+          </table>
+
+          <p>Chúng tôi rất mong được chào đón bạn tại khách sạn của chúng tôi!</p>
+          <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại dưới đây.</p>
+
+          <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
+              <p>Địa chỉ: ${check.room.location}</p>
+              <p>Email: ${check.room.user.email} | Số điện thoại: ${check.room.user.profile?.phone}</p>
+          </div>
+      </div>
+  </body>
+      `;
+    await sendMail(check.email, contentHtml);
+  }
 };
 
 export const getBookingByRoomId = async (roomId: number) => {
@@ -177,6 +236,9 @@ export const getBookingByUserId = async (userId: string | undefined) => {
     include: {
       Payment: true,
       room: true,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
   return bookingList;

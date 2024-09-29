@@ -28,7 +28,8 @@ export const Content = styled.div``;
 export const StatusPending = styled.div`
   padding: 4px 8px;
   padding-right: 36px;
-  background-color: #6f76b5;
+  background: linear-gradient(to right, #6f76b5, #6f76b55b);
+
   color: white;
   position: absolute;
   top: 0px;
@@ -47,7 +48,8 @@ export const StatusPending = styled.div`
 export const StatusSuccess = styled.div`
   padding: 4px 8px;
   padding-right: 36px;
-  background-color: #5b8c00;
+  background: linear-gradient(to right, #5b8c00, #5b8c005b);
+
   color: white;
   position: absolute;
   top: 0px;
@@ -66,7 +68,8 @@ export const StatusSuccess = styled.div`
 export const StatusRefund = styled.div`
   padding: 4px 8px;
   padding-right: 36px;
-  background-color: #d3adf7;
+  background: linear-gradient(to right, #d3adf7, #d3adf75b);
+
   color: white;
   position: absolute;
   top: 0px;
@@ -87,6 +90,7 @@ export const StatusUnavailable = styled.div`
   padding: 4px 8px;
   padding-right: 36px;
   background-color: gray;
+  background: linear-gradient(to right, gray, #8080805b);
   color: white;
   position: absolute;
   top: 0px;
