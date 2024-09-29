@@ -6,14 +6,17 @@ import { Route, Routes } from "react-router-dom";
 import { ConfigProvider } from "antd";
 
 import AdminLayout from "@layouts/Admin";
+import UserInfoLayout from "@layouts/UserInfo";
 import CustomerLayout from "@layouts/Customer";
 import PartnerRegistration from "@pages/Customer/PartnerRegistration";
 import HomePage from "@pages/Customer/Home";
+import BookingHistory from "@pages/Customer/BookingHistory";
 import RoomList from "@pages/Customer/RoomList";
 import CreatePost from "@pages/Customer/CreatePost";
 import VerifyAccount from "@pages/VerifyAccount";
 import Booking from "@pages/Customer/Booking";
 import RoomDetail from "@pages/Customer/RoomDetail";
+import Notification from "@pages/Customer/Notification";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getUserInfoRequest, logoutRequest } from "@slices/user.slice";
@@ -70,6 +73,10 @@ function App() {
           <Route path={ROUTES.USER.ROOM_LIST} element={<RoomList />} />
           <Route path={ROUTES.USER.ROOM_DETAIL} element={<RoomDetail />} />
           <Route path={ROUTES.USER.BOOKING} element={<Booking />} />
+          <Route path={ROUTES.USER.NOTIFICATION} element={<Notification />} />
+          <Route element={<UserInfoLayout />}>
+            <Route path={ROUTES.USER.BOOKING_HISTORY} element={<BookingHistory />} />
+          </Route>
         </Route>
       </Routes>
     </ConfigProvider>

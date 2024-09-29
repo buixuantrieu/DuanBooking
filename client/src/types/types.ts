@@ -45,6 +45,19 @@ export interface UserType {
   include?: IncludeParams;
   profile?: ProfileType;
   UserRole?: UserRole[] | undefined;
+  Partner?: PartnerType;
+  Booking?: BookingType[];
+}
+
+export interface PartnerType {
+  id?: number;
+  isApproved?: boolean;
+  paymentAccountMethod?: string;
+  paymentAccountType?: string;
+  paymentAccountInfo?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  userId?: string;
 }
 export interface UserRole {
   id?: number;
@@ -154,4 +167,28 @@ export interface InfoBookingTemporary {
   checkIn?: string | undefined;
   checkOut?: string | undefined;
   roomName?: string | undefined;
+}
+export interface BookingType {
+  id?: number;
+  checkIn?: string;
+  checkOut?: string;
+  customerName?: string;
+  email?: string;
+  phone?: string;
+  createdAt?: Date;
+  customerId?: string;
+  roomId?: number;
+  paymentMethod?: string;
+  amount?: number;
+  room?: RoomType;
+  totalPrice?: number;
+  Payment?: Payment;
+}
+export interface Payment {
+  id?: number;
+  amount?: number;
+  paymentMethod?: string;
+  paymentDate?: Date;
+  status?: number;
+  bookingId?: number;
 }

@@ -13,7 +13,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { logoutRequest } from "@slices/user.slice";
-import { CiLogin } from "react-icons/ci";
 function Header() {
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const { userInfo } = useSelector((state: RootState) => state.user);
@@ -21,6 +20,10 @@ function Header() {
   const navigate = useNavigate();
 
   const items = [
+    {
+      key: "0",
+      label: userInfo.data.Partner?.isApproved && <Link to={ROUTES.USER.CREATE_POST}>Tạo bài đăng</Link>,
+    },
     {
       key: "1",
       label: <Link to={ROUTES.USER.PROFILE}>Thông tin cá nhân</Link>,
@@ -31,7 +34,7 @@ function Header() {
     },
     {
       key: "3",
-      label: <Link to={ROUTES.USER.PROFILE}>Lịch sử đặt phòng</Link>,
+      label: <Link to={ROUTES.USER.BOOKING_HISTORY}>Lịch sử đặt phòng</Link>,
     },
 
     {
@@ -56,10 +59,6 @@ function Header() {
         </div>
       ),
     },
-    {
-      key: "7",
-      label: <Link to={ROUTES.USER.PROFILE}>Đăng nhập</Link>,
-    },
   ];
   return (
     <S.HeaderWrapper>
@@ -74,13 +73,13 @@ function Header() {
           <S.NavMobileElement to={ROUTES.USER.HOME}>
             <FaForumbee /> Diễn đàn
           </S.NavMobileElement>
-          <S.NavMobileElement to={ROUTES.USER.CONTACT}>
+          <S.NavMobileElement to={ROUTES.USER.PROFILE}>
             <MdOutlineConnectWithoutContact /> Đăng kí đối tác
           </S.NavMobileElement>
           <S.NavMobileElement to={ROUTES.USER.ABOUT}>
             <BsQuestionCircle /> Giới thiệu
           </S.NavMobileElement>
-          <S.NavMobileElement to={ROUTES.USER.CONTACT}>
+          <S.NavMobileElement to={ROUTES.USER.PROFILE}>
             <MdOutlineConnectWithoutContact /> Liên hệ
           </S.NavMobileElement>
         </S.MenuNavMobile>
@@ -90,9 +89,11 @@ function Header() {
         <S.NavElement to={ROUTES.USER.HOME}>Trang chủ</S.NavElement>
         <S.NavElement to={ROUTES.USER.ROOM_LIST}>Danh sách phòng</S.NavElement>
         <S.NavElement to={ROUTES.USER.HOME}>Diễn đàn</S.NavElement>
-        <S.NavElement to={ROUTES.USER.PARTNER_REGISTRATION}>Đăng kí đối tác</S.NavElement>
+        {!userInfo.data.Partner?.id && (
+          <S.NavElement to={ROUTES.USER.PARTNER_REGISTRATION}>Đăng kí đối tác</S.NavElement>
+        )}
         <S.NavElement to={ROUTES.USER.ABOUT}>Giới thiệu</S.NavElement>
-        <S.NavElement to={ROUTES.USER.CONTACT}>Liên hệ</S.NavElement>
+        <S.NavElement to={ROUTES.USER.PROFILE}>Liên hệ</S.NavElement>
       </S.NavContainer>
       <S.HeaderControl>
         {userInfo.data?.id ? (
@@ -115,7 +116,7 @@ function Header() {
           </>
         ) : (
           <Link to={ROUTES.AUTH}>
-            <CiLogin style={{ cursor: "pointer" }} />
+            <span style={{ cursor: "pointer", fontSize: 14 }}>Đăng nhập</span>
           </Link>
         )}
       </S.HeaderControl>

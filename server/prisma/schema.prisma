@@ -49,6 +49,7 @@ model User {
   Favorite       Favorite[]
   Review         Review[]
   Comment        Comment[]
+  Booking        Booking[]
 }
 
 model Profile {
@@ -111,7 +112,7 @@ model Room {
   view          Int           @default(0)
   isDelete      Boolean       @default(false)
   createAt      DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  updatedAt     DateTime      @updatedAt
   roomTypeId    Int
   roomType      RoomType      @relation(fields: [roomTypeId], references: [id])
   partnerId     String
@@ -127,6 +128,7 @@ model Room {
   Favorite      Favorite[]
   Review        Review[]
   Comment       Comment[]
+  Booking       Booking[]
 }
 
 model Favorite {
@@ -195,6 +197,32 @@ model Comment {
   content   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Booking {
+  id           Int      @id @default(autoincrement())
+  checkIn      DateTime
+  checkOut     DateTime
+  customerName String
+  email        String
+  phone        String
+  totalPrice   Float
+  createdAt    DateTime @default(now())
+  customerId   String
+  user         User     @relation(fields: [customerId], references: [id])
+  roomId       Int
+  room         Room     @relation(fields: [roomId], references: [id])
+  Payment      Payment?
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  amount        Float
+  paymentMethod String
+  paymentDate   DateTime @updatedAt
+  status        Int
+  bookingId     Int      @unique
+  booking       Booking  @relation(fields: [bookingId], references: [id])
 }
 
 model Province {
