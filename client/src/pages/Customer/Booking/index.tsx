@@ -1,21 +1,79 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@constants/routes";
-import { Row, Col, Card, Form, Input, Button } from "antd";
+import { Row, Col, Card, Form, Input, Button, notification } from "antd";
 import * as S from "./style";
 import dayjs from "dayjs";
+import { createBookingRequest, updateCreateBookingRequest } from "@slices/booking.slice";
+import Paypal from "../../../Paypal";
 
 function Booking() {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const [isValidate, setIsValidate] = useState(true);
+
   const { infoBookingTemporary } = useSelector((state: RootState) => state.booking);
   const { userInfo } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!infoBookingTemporary.data.roomId) {
       navigate(ROUTES.USER.ROOM_LIST);
     }
   }, []);
+
+  useEffect(() => {
+    form
+      .validateFields()
+      .then(() => setIsValidate(false))
+      .catch(() => setIsValidate(true));
+  }, []);
+
+  const handleChangeForm = () => {
+    form
+      .validateFields()
+      .then(() => setIsValidate(false))
+      .catch(() => setIsValidate(true));
+  };
+
+  const handleBooking = () => {
+    const values = form.getFieldsValue();
+    dispatch(
+      createBookingRequest({
+        data: {
+          customerName: values.fullName,
+          phone: values.phone,
+          email: values.email,
+          checkIn: infoBookingTemporary.data.checkIn,
+          checkOut: infoBookingTemporary.data.checkOut,
+          amount: infoBookingTemporary.data.total,
+          customerId: userInfo.data.id,
+          roomId: infoBookingTemporary.data.roomId,
+          paymentMethod: "paypal",
+        },
+        callback: () => null,
+      })
+    );
+  };
+
+  const handleUpdateBooking = () => {
+    dispatch(
+      updateCreateBookingRequest({
+        data: {
+          checkIn: infoBookingTemporary.data.checkIn,
+          checkOut: infoBookingTemporary.data.checkOut,
+          customerId: userInfo.data.id,
+          roomId: infoBookingTemporary.data.roomId,
+        },
+        callback: () => {
+          navigate(ROUTES.USER.ROOM_LIST);
+          notification.success({ message: "Chúc mừng bạn đã đặt phònh thành công!" });
+        },
+      })
+    );
+  };
 
   return (
     <S.BookingWrapper>
@@ -52,7 +110,7 @@ function Booking() {
         </Col>
         <Col span={15}>
           <Card title="Thông tin cá nhân">
-            <Form layout="vertical">
+            <Form form={form} onFinish={handleBooking} layout="vertical">
               <Row gutter={[16, 16]}>
                 <Col span={12}>
                   <Form.Item
@@ -66,7 +124,7 @@ function Booking() {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input onChange={() => handleChangeForm()} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -81,7 +139,7 @@ function Booking() {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input onChange={() => handleChangeForm()} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -96,11 +154,14 @@ function Booking() {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input onChange={() => handleChangeForm()} />
                   </Form.Item>
                 </Col>
-                <Button htmlType="submit" type="primary" style={{ width: "100%" }}>
-                  Thanh toán Paypal
+                <Button
+                  disabled={isValidate}
+                  style={{ height: "max-content", width: "100%", border: "none", background: "transparent" }}
+                >
+                  <Paypal callback={handleUpdateBooking} createBooking={handleBooking} amount={Number(10)} />
                 </Button>
               </Row>
             </Form>

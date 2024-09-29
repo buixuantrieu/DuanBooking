@@ -155,3 +155,27 @@ export interface InfoBookingTemporary {
   checkOut?: string | undefined;
   roomName?: string | undefined;
 }
+export interface BookingType {
+  id?: number;
+  checkIn?: string;
+  checkOut?: string;
+  customerName?: string;
+  email?: string;
+  phone?: string;
+  createdAt?: Date;
+  customerId?: string;
+  roomId?: number;
+  paymentMethod?: string;
+  amount?: number;
+  room?: RoomType;
+  totalPrice?: number;
+  Payment?: Payment;
+}
+export interface Payment {
+  id?: number;
+  amount?: number;
+  paymentMethod?: string;
+  paymentDate?: Date;
+  status?: number;
+  bookingId?: number;
+}

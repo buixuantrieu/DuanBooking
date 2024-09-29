@@ -20,11 +20,10 @@ dayjs.extend(isSameOrBefore);
 
 dayjs.extend(isBetween);
 import "dayjs/locale/vi";
-import { addInfoBookingTemporary } from "@slices/booking.slice";
+import { addInfoBookingTemporary, getBookingByRoomIdRequest } from "@slices/booking.slice";
 import { ROUTES } from "@constants/routes";
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
-
 function RoomDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -38,6 +37,7 @@ function RoomDetail() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const { roomDetail } = useSelector((state: RootState) => state.room);
+  const { bookingList } = useSelector((state: RootState) => state.booking);
   const { commentList, reviewList } = useSelector((state: RootState) => state.rate);
 
   const [imageMain, setImageMain] = useState<string | undefined>("");
@@ -60,11 +60,24 @@ function RoomDetail() {
     dispatch(getRoomDetailRequest({ id: Number(id) }));
     dispatch(getCommentRequest({ id }));
     dispatch(getReviewRequest({ id }));
+    dispatch(getBookingByRoomIdRequest({ roomId: Number(id) }));
   }, []);
-  const bookedDates = [
-    [dayjs("2024-09-28"), dayjs("2024-09-30")],
-    [dayjs("2024-10-4"), dayjs("2024-10-07")],
-  ];
+  // const bookedDates = [
+  //   [dayjs("2024-09-28"), dayjs("2024-09-30")],
+  //   [dayjs("2024-10-4"), dayjs("2024-10-07")],
+  // ];
+
+  const bookedDates = useMemo(
+    () =>
+      bookingList.data.map((item) => {
+        return [
+          dayjs(item.checkIn).subtract(1, "day").startOf("day"),
+          dayjs(item.checkOut).subtract(1, "day").startOf("day"),
+        ];
+      }),
+    [bookingList.data]
+  );
+
   const disabledDate = (current: Dayjs) => {
     if (!current) return false;
 
@@ -171,8 +184,8 @@ function RoomDetail() {
   );
 
   const handleBooking = (value: { dateBooking: Date[] }) => {
-    const checkIn = dayjs(value.dateBooking[0]).toISOString();
-    const checkOut = dayjs(value.dateBooking[1]).toISOString();
+    const checkIn = dayjs(value.dateBooking[0]).add(1, "day").toISOString();
+    const checkOut = dayjs(value.dateBooking[1]).add(1, "day").toISOString();
 
     const infoBooking = {
       checkIn,
