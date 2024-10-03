@@ -58,6 +58,29 @@ export const loginUser = async (userName: string, password: string) => {
   }
   return false;
 };
+
+export const changePassword = async (useId: string, oldPassword: string, newPassword: string) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: useId,
+    },
+  });
+  const checkPass = await checkPassword(oldPassword, user?.password as string);
+  if (checkPass) {
+    const hashPass = await hashPassword(newPassword);
+    await prisma.user.update({
+      data: {
+        password: hashPass,
+      },
+      where: {
+        id: useId,
+      },
+    });
+    return true;
+  }
+  return false;
+};
+
 export const sendMail = async (email: string, htmlContent: string) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -110,6 +133,11 @@ export const deleteUser = async (id: string) => {
 };
 export const updateProfileById = async (userId: string, newData: Partial<Profile>) => {
   try {
+    const profile = await prisma.profile.findFirst({
+      where: {
+        userId,
+      },
+    });
     const updateUser = await prisma.profile.update({
       where: {
         userId,
@@ -191,4 +219,60 @@ export const createPartner = async (
     },
   });
   return partner;
+};
+export const updateProfile = async (data: Profile, userId: string | undefined) => {
+  const profile = await prisma.profile.update({
+    data,
+    where: {
+      userId: userId,
+    },
+  });
+};
+
+export const getAllPartner = async () => {
+  const result = await prisma.partner.findMany({
+    include: {
+      user: { include: { profile: true } },
+    },
+  });
+  return result;
+};
+export const updatePartner = async (id: number, data: { [key: string]: boolean }) => {
+  const result = await prisma.partner.update({
+    data,
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
+export const createNotification = async (userId: string, message: string) => {
+  const result = await prisma.notification.create({
+    data: {
+      message,
+      userId,
+    },
+  });
+};
+export const getNotificationByUserId = async (userId: string) => {
+  const notification = await prisma.notification.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return notification;
+};
+export const updateWatchNotification = async (userId: string) => {
+  const result = await prisma.notification.updateMany({
+    data: {
+      isWatched: true,
+    },
+    where: {
+      userId,
+    },
+  });
 };

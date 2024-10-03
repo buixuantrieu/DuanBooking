@@ -24,6 +24,24 @@ import {
   registerPartnerRequest,
   registerPartnerSuccess,
   registerPartnerFailure,
+  updateProfileRequest,
+  updateProfileSuccess,
+  updateProfileFailure,
+  changePasswordRequest,
+  changePasswordSuccess,
+  changePasswordFailure,
+  getPartnerAllRequest,
+  getPartnerAllSuccess,
+  getPartnerAllFailure,
+  updatePartnerRequest,
+  updatePartnerSuccess,
+  updatePartnerFailure,
+  getNotificationByUserIdFailure,
+  getNotificationByUserIdRequest,
+  getNotificationByUserIdSuccess,
+  updateNotificationByUserIdRequest,
+  updateNotificationByUserIdSuccess,
+  updateNotificationByUserIdFailure,
 } from "@slices/user.slice";
 import { notification } from "antd";
 
@@ -129,6 +147,17 @@ function* getUserInfoSaga(_action: AnyAction): Generator {
     yield put(getUserInfoFailure({ error: "Lỗi" }));
   }
 }
+function* updateProfileSaga(action: AnyAction): Generator {
+  try {
+    const { data } = action.payload;
+    yield apiClient.put("http://localhost:3000/users/profile", { data });
+    yield put(getUserInfoRequest());
+    yield put(updateProfileSuccess());
+    yield notification.success({ message: "Cập nhật thành công!" });
+  } catch (e) {
+    yield put(updateProfileFailure({ error: "Lỗi" }));
+  }
+}
 function* registerPartnerSaga(action: AnyAction): Generator {
   try {
     const { data, callback } = action.payload;
@@ -137,6 +166,53 @@ function* registerPartnerSaga(action: AnyAction): Generator {
     yield callback();
   } catch (e) {
     yield put(registerPartnerFailure({ error: "Lỗi" }));
+  }
+}
+function* changePasswordSaga(action: AnyAction): Generator {
+  try {
+    const { data, callback } = action.payload;
+    yield apiClient.post("http://localhost:3000/users/change-password", data);
+    yield put(changePasswordSuccess());
+    yield callback();
+    yield notification.success({ message: "Thay đổi mật khẩu thành công!" });
+  } catch (e) {
+    yield put(changePasswordFailure({ error: "Lỗi" }));
+  }
+}
+function* getPartnerAllSaga(_action: AnyAction): Generator {
+  try {
+    const result = yield apiClient.get("http://localhost:3000/users/partner");
+    yield put(getPartnerAllSuccess({ data: result.data }));
+  } catch (e) {
+    yield put(getPartnerAllFailure({ error: "Lỗi" }));
+  }
+}
+function* updatePartnerSaga(action: AnyAction): Generator {
+  try {
+    const { data, id } = action.payload;
+    yield apiClient.put(`http://localhost:3000/users/partner/${id}`, data);
+    yield put(updatePartnerSuccess());
+    yield put(getPartnerAllRequest());
+  } catch (e) {
+    yield put(updatePartnerFailure({ error: "Lỗi" }));
+  }
+}
+function* getNotificationByUserIdSaga(_action: AnyAction): Generator {
+  try {
+    const result = yield apiClient.get(`http://localhost:3000/users/notification`);
+    yield put(getNotificationByUserIdSuccess({ data: result.data }));
+    yield put(getPartnerAllRequest());
+  } catch (e) {
+    yield put(getNotificationByUserIdFailure({ error: "Lỗi" }));
+  }
+}
+function* updateNotificationByUserIdSaga(action: AnyAction): Generator {
+  try {
+    yield apiClient.put(`http://localhost:3000/users/notification`);
+    yield put(updateNotificationByUserIdSuccess());
+    yield put(getNotificationByUserIdRequest());
+  } catch (e) {
+    yield put(updateNotificationByUserIdFailure({ error: "Lỗi" }));
   }
 }
 
@@ -148,4 +224,10 @@ export default function* userSaga() {
   yield takeEvery(loginWithGoogle, loginWithGoogleSaga);
   yield takeEvery(getUserInfoRequest, getUserInfoSaga);
   yield takeEvery(registerPartnerRequest, registerPartnerSaga);
+  yield takeEvery(updateProfileRequest, updateProfileSaga);
+  yield takeEvery(changePasswordRequest, changePasswordSaga);
+  yield takeEvery(getPartnerAllRequest, getPartnerAllSaga);
+  yield takeEvery(updatePartnerRequest, updatePartnerSaga);
+  yield takeEvery(getNotificationByUserIdRequest, getNotificationByUserIdSaga);
+  yield takeEvery(updateNotificationByUserIdRequest, updateNotificationByUserIdSaga);
 }

@@ -117,6 +117,7 @@ export const getRoomDetailById = async (id: number) => {
       user: {
         include: {
           profile: true,
+          Partner: true,
         },
       },
     },

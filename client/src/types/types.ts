@@ -58,6 +58,8 @@ export interface PartnerType {
   createdAt?: Date;
   updatedAt?: Date;
   userId?: string;
+  user?: UserType;
+  isActive?: boolean;
 }
 export interface UserRole {
   id?: number;
@@ -191,4 +193,13 @@ export interface Payment {
   paymentDate?: Date;
   status?: number;
   bookingId?: number;
+}
+
+export interface NotificationType {
+  id?: number;
+  userId?: string;
+  message?: string;
+  isWatched?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

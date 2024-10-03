@@ -1,4 +1,16 @@
-import { createPartner, deleteUser, getUserDetailById, updateProfileById } from "@services/userService";
+import {
+  changePassword,
+  createNotification,
+  createPartner,
+  deleteUser,
+  getAllPartner,
+  getNotificationByUserId,
+  getUserDetailById,
+  updatePartner,
+  updateProfile,
+  updateProfileById,
+  updateWatchNotification,
+} from "@services/userService";
 import { Request, Response } from "express";
 
 interface CustomRequest extends Request {
@@ -23,6 +35,16 @@ export class UserController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  public async updateProfile(req: CustomRequest, res: Response) {
+    try {
+      const { data } = req.body;
+      const { email, ...newData } = data;
+      const profile = await updateProfile(newData, req.userId);
+      res.json(profile);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
   public async registerPartner(req: CustomRequest, res: Response) {
     try {
       const {
@@ -40,6 +62,57 @@ export class UserController {
       const partner = await createPartner(userId, paymentAccountMethod, paymentAccountType, paymentAccountInfo);
       await updateProfileById(userId, { address, provinceId, districtId, wardId, phone, fullName });
       return res.json(partner);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  public async changePassword(req: CustomRequest, res: Response) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const checkPass = await changePassword(req.userId as string, oldPassword, newPassword);
+      if (checkPass) {
+        res.json(checkPass);
+      } else {
+        return res.status(500).json({ message: "Sai tài khoản mật khẩu" });
+      }
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  public async indexPartner(req: CustomRequest, res: Response) {
+    try {
+      const partners = await getAllPartner();
+      res.json(partners);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  public async updatePartner(req: CustomRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const { isApproved } = req.body;
+      const partner = await updatePartner(Number(id), req.body);
+      if (isApproved) {
+        await createNotification(partner.userId, "Yêu cầu đăng kí đối tác của bạn đã được phê duyệt");
+      }
+
+      res.json(partner);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  public async indexNotification(req: CustomRequest, res: Response) {
+    try {
+      const result = await getNotificationByUserId(req.userId as string);
+      res.json(result);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  public async updateNotification(req: CustomRequest, res: Response) {
+    try {
+      const result = await updateWatchNotification(req.userId as string);
+      res.json(result);
     } catch (e) {
       return res.status(500).json({ message: "Internal Server Error" });
     }

@@ -165,7 +165,7 @@ function Booking() {
                   <Paypal
                     callback={handleUpdateBooking}
                     createBooking={handleBooking}
-                    amount={Number(infoBookingTemporary.data.price)}
+                    amount={Number(infoBookingTemporary.data.total)}
                   />
                 </Button>
               </Row>
