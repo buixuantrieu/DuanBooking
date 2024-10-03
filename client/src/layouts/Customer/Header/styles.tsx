@@ -5,6 +5,12 @@ import { media } from "@constants/media";
 interface ShowMenu {
   $showMenu: boolean;
 }
+interface Watched {
+  $isWatched: boolean | undefined;
+}
+interface ShowNotification {
+  $isShowNotification: boolean;
+}
 
 export const HeaderWrapper = styled.div`
   display: flex;
@@ -134,4 +140,48 @@ export const NavMobileElement = styled(Link)`
     transform: translate(6px, -2px);
   }
   transition: all 0.4s;
+`;
+export const NotificationContainer = styled.div<ShowNotification>`
+  position: absolute;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  top: 24px;
+  right: 0;
+  z-index: 10;
+  width: 300px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: none;
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: 2px;
+  ${(prop) =>
+    prop.$isShowNotification &&
+    css`
+      display: block;
+    `}
+`;
+export const NotificationElement = styled.div<Watched>`
+  font-size: 14px;
+  padding: 12px 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #bfbfbf;
+  background-color: white;
+  color: black !important;
+  ${(prop) =>
+    !prop.$isWatched &&
+    css`
+      background-color: #f0f0f0;
+    `};
+`;
+export const TitleNotification = styled.div`
+  padding: 16px;
+  border-bottom: 1px solid #bfbfbf;
+`;
+export const TimeNotification = styled.p`
+  margin-top: 6px;
+  font-weight: 300;
+  font-style: italic;
+  color: gray;
+  font-size: 10px;
 `;

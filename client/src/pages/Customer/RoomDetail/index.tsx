@@ -287,6 +287,7 @@ function RoomDetail() {
               ]}
             >
               <RangePicker
+                disabled={!roomDetail.data.user?.Partner?.isActive}
                 style={{ width: 350 }}
                 disabledDate={disabledDate}
                 format="YYYY-MM-DD"
@@ -312,7 +313,12 @@ function RoomDetail() {
                 )}
               </S.PriceTotal>
             </S.TotalPrice>
-            <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+            <Button
+              disabled={!roomDetail.data.user?.Partner?.isActive}
+              type="primary"
+              htmlType="submit"
+              style={{ width: "100%" }}
+            >
               Đặt phòng
             </Button>
           </Form>

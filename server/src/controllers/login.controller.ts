@@ -101,10 +101,17 @@ export class LoginController {
         const refreshToken = await generateRefreshToken({ id: userId });
         return res.json({ accessToken, refreshToken, user: { UserRole: 2 } });
       } else {
-        await updateProfileById(loginUser[0].id, {
-          avatar: googleUser.picture,
-          fullName: googleUser.name,
+        const userProfile = await prisma.profile.findFirst({
+          where: {
+            userId: loginUser[0].id,
+          },
         });
+        if (userProfile?.avatar == null || userProfile?.avatar == "") {
+          await updateProfileById(loginUser[0].id, {
+            avatar: googleUser.picture,
+            fullName: googleUser.name,
+          });
+        }
         const accessToken = await generateAccessToken({ id: loginUser[0].id });
         const refreshToken = await generateRefreshToken({ id: loginUser[0].id });
         return res.json({ accessToken, refreshToken, user: loginUser[0] });

@@ -17,12 +17,12 @@ export const ROUTES = {
   },
   ADMIN: {
     DASHBOARD: "/admin",
-    HOME_LIST: "/admin/homes",
-    ACCESS_CONTROL: "admin/access-control",
+    PARTNER: "/admin/partner",
+    POST: "admin/post",
     ACCOUNT_MANAGEMENT: "/admin/account-management",
     USER_MANAGE: "/admin/users",
     BOOKING_MANAGE: "/admin/bookings",
     COMMENT_MANAGE: "/admin/comments",
-    KING_OF_ROOM_MANAGE: "/admin/king-of-rooms",
+    POST_DETAIL: "/admin/post/:id",
   },
 };

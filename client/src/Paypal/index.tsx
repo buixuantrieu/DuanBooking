@@ -32,8 +32,7 @@ const PayPalPayment: React.FC<PayPalPaymentProps> = ({
   };
   const onApprove = async (_data: any, actions: any) => {
     try {
-      const details = await actions.order.capture();
-      console.log(details.status);
+      await actions.order.capture();
       if (typeof callback === "function") {
         callback();
       }

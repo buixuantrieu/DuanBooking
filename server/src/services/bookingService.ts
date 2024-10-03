@@ -2,7 +2,7 @@ import prisma from "@prismaClient";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { sendMail } from "./userService";
+import { createNotification, sendMail } from "./userService";
 
 // Kích hoạt plugin
 dayjs.extend(utc);
@@ -162,8 +162,12 @@ export const updateCreateBooking = async (checkIn: Date, checkOut: Date, custome
         id: check.Payment?.id,
       },
     });
+    createNotification(
+      customerId,
+      "Phòng bạn đặt đã được người khác thanh toán trước. Hệ thống sẽ hoàn tiền cho bạn trong vòng 24 giờ tới. Chúng tôi xin lỗi vì sự bất tiện này và rất mong bạn thông cảm!"
+    );
   }
-  if (check) {
+  if (check && checkPayment.length == 0) {
     const dateCheckIn = new Date(check.checkIn);
     const dateCheckOut = new Date(check.checkOut);
     const contentHtml = `
