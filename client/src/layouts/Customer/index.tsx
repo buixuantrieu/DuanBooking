@@ -3,6 +3,7 @@ import * as S from "./styles";
 import Header from "./Header";
 import Footer from "./Footer";
 
+
 function CustomerLayout() {
   return (
     <S.CustomerWrapper>

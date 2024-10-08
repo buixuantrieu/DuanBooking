@@ -1,3 +1,4 @@
+import { Room } from "@prisma/client";
 import prisma from "@prismaClient";
 
 export const getAllRoomType = async () => {
@@ -13,7 +14,8 @@ export const getAllRoom = async (
   amenityList: number[],
   pricePerNight: number[],
   roomTypeId: number | undefined,
-  orderBy: { [key: string]: string } | undefined
+  orderBySort: { [key: string]: string } | undefined,
+  isApproved: boolean | undefined
 ) => {
   const result = await prisma.room.findMany({
     include: {
@@ -41,11 +43,11 @@ export const getAllRoom = async (
         gte: pricePerNight[0],
         lte: pricePerNight[1],
       },
-      roomTypeId: roomTypeId,
+      roomTypeId,
+      isDelete: false,
+      isApproved,
     },
-    orderBy: {
-      ...orderBy,
-    },
+    orderBy: orderBySort || { createAt: "desc" },
   });
   return result;
 };
@@ -123,4 +125,14 @@ export const getRoomDetailById = async (id: number) => {
     },
   });
   return result;
+};
+
+export const updateRoom = async (id: number, data: Room) => {
+  const room = await prisma.room.update({
+    data,
+    where: {
+      id,
+    },
+  });
+  return room;
 };

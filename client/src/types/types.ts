@@ -103,7 +103,7 @@ export interface AmenityType {
 
 export interface RoomType {
   id?: number;
-  isApprove?: boolean;
+  isApproved?: boolean;
   image?: string;
   title?: string;
   roomName?: string;

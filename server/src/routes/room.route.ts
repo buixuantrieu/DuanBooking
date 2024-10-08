@@ -14,6 +14,7 @@ export class RoomRoute {
     this.path.route("/").post(authenticateToken, this.roomController.create);
     this.path.route("/").get(this.roomController.index);
     this.path.route("/:id").get(this.roomController.show);
+    this.path.route("/:id").put(this.roomController.update);
 
     return this.path;
   }

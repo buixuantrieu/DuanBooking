@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Table, Tabs } from "antd";
+import { Button, notification, Table, Tabs } from "antd";
 import * as S from "./style";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { useEffect, useMemo } from "react";
-import { getRoomRequest } from "@slices/room.slice";
+import { getRoomRequest, updatePostRequest } from "@slices/room.slice";
 import { RoomType } from "types/types";
+import { generatePath, Link } from "react-router-dom";
+import { ROUTES } from "@constants/routes";
 
 function PostManager() {
   const dispatch = useDispatch();
@@ -17,11 +19,34 @@ function PostManager() {
   const { roomList } = useSelector((state: RootState) => state.room);
 
   const roomListUnActive = useMemo(() => {
-    return roomList.data.filter((item) => !item.isApprove);
+    return roomList.data.filter((item) => !item.isApproved);
   }, [roomList.data]);
   const roomListActive = useMemo(() => {
-    return roomList.data.filter((item) => item.isApprove);
+    return roomList.data.filter((item) => item.isApproved);
   }, [roomList.data]);
+
+  const handleApprove = (id: number) => {
+    dispatch(
+      updatePostRequest({
+        id,
+        data: { isApproved: true },
+        callback: () => {
+          notification.success({ message: "Phê duyệt bài viết thành công!" });
+        },
+      })
+    );
+  };
+  const handleDelete = (id: number) => {
+    dispatch(
+      updatePostRequest({
+        id,
+        data: { isDelete: true },
+        callback: () => {
+          notification.success({ message: "Đã từ chối bài viết!" });
+        },
+      })
+    );
+  };
 
   const columnOne = [
     {
@@ -41,19 +66,63 @@ function PostManager() {
       title: "Xem bài đăng",
       dataIndex: "view",
       key: "view",
+      render: (_: any, item: RoomType) => {
+        return <Link to={generatePath(ROUTES.ADMIN.POST_DETAIL, { id: item.id })}>Xem chi tiết</Link>;
+      },
     },
     {
       title: "Thao tác",
       dataIndex: "control",
       key: "control",
-      render: () => (
+      render: (_: any, item: RoomType) => (
         <div style={{ display: "flex", gap: 4 }}>
-          <Button type="primary">Phê duyệt</Button>
-          <Button danger>Từ chối</Button>
+          <Button onClick={() => handleApprove(Number(item.id))} type="primary">
+            Phê duyệt
+          </Button>
+          <Button onClick={() => handleDelete(Number(item.id))} danger>
+            Từ chối
+          </Button>
         </div>
       ),
     },
   ];
+
+  const columnTwo = [
+    {
+      title: "Tên phòng",
+      dataIndex: "roomName",
+      key: "roomName",
+    },
+    {
+      title: "Chủ phòng",
+      dataIndex: "partner",
+      key: "partner",
+      render: (_: any, item: RoomType) => {
+        return `${item.user?.profile?.fullName}`;
+      },
+    },
+    {
+      title: "Xem bài đăng",
+      dataIndex: "view",
+      key: "view",
+      render: (_: any, item: RoomType) => {
+        return <Link to={generatePath(ROUTES.ADMIN.POST_DETAIL, { id: item.id })}>Xem chi tiết</Link>;
+      },
+    },
+    {
+      title: "Thao tác",
+      dataIndex: "control",
+      key: "control",
+      render: (_: any, item: RoomType) => (
+        <div style={{ display: "flex", gap: 4 }}>
+          <Button onClick={() => handleDelete(Number(item.id))} danger>
+            Xóa bài viết
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   const tabItem = [
     {
       label: "Chưa phê duyệt",
@@ -63,9 +132,10 @@ function PostManager() {
     {
       label: "Đã phê duyệt",
       key: "2",
-      children: <Table dataSource={roomListActive} columns={columnOne} rowKey="id" />,
+      children: <Table dataSource={roomListActive} columns={columnTwo} rowKey="id" />,
     },
   ];
+
   return (
     <S.PostWrapper>
       <S.PostTitle>Quản lí bài đăng phòng cho thuê</S.PostTitle>

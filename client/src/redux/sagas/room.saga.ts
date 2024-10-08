@@ -17,6 +17,9 @@ import {
   getRoomDetailRequest,
   getRoomDetailSuccess,
   getRoomDetailFail,
+  updatePostRequest,
+  updatePostSuccess,
+  updatePostFail,
 } from "@slices/room.slice";
 import { AnyAction } from "redux-saga";
 import axios from "axios";
@@ -41,6 +44,18 @@ function* getRoomDetailSaga(action: AnyAction): Generator {
     yield put(getRoomDetailSuccess({ data: result.data }));
   } catch (e) {
     yield put(getRoomDetailFail({ error: "Lỗi" }));
+  }
+}
+
+function* updatePostSaga(action: AnyAction): Generator {
+  try {
+    const { id, data, callback } = action.payload;
+    yield axios.put(`http://localhost:3000/room/${id}`, data);
+    yield put(updatePostSuccess());
+    yield put(getRoomRequest({}));
+    yield callback();
+  } catch (e) {
+    yield put(updatePostFail({ error: "Lỗi" }));
   }
 }
 
@@ -78,4 +93,5 @@ export default function* userSaga() {
   yield takeEvery(createRoomRequest, createRoomSaga);
   yield takeEvery(getRoomRequest, getRoomSaga);
   yield takeEvery(getRoomDetailRequest, getRoomDetailSaga);
+  yield takeEvery(updatePostRequest, updatePostSaga);
 }

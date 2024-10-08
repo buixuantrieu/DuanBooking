@@ -67,7 +67,14 @@ function UserInfoLayout() {
               </S.CameraUpload>
             </S.Avatar>
           </S.BoxAvatarContainer>
-          <S.NavigateContainer>{renderNavigation}</S.NavigateContainer>
+          <S.NavigateContainer>
+            {userInfo.data.Partner?.isActive && userInfo.data.Partner?.isApproved && (
+              <S.NavigateElement to={ROUTES.USER.ROOM_MANAGER} $active={pathname === ROUTES.USER.ROOM_MANAGER}>
+                Quản lý phòng
+              </S.NavigateElement>
+            )}
+            {renderNavigation}
+          </S.NavigateContainer>
         </Card>
       </Col>
       <Col span={16}>
