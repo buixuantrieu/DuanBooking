@@ -10,6 +10,7 @@ import UserInfoLayout from "@layouts/UserInfo";
 import PartnerManager from "@pages/Admin/PartnerManager";
 import CustomerLayout from "@layouts/Customer";
 import PartnerRegistration from "@pages/Customer/PartnerRegistration";
+import PostDetailManager from "@pages/Admin/PostDetailManager";
 import HomePage from "@pages/Customer/Home";
 import Dashboard from "@pages/Admin/Dashboard";
 import PostManager from "@pages/Admin/PostManager";
@@ -17,6 +18,7 @@ import BookingHistory from "@pages/Customer/BookingHistory";
 import RoomList from "@pages/Customer/RoomList";
 import CreatePost from "@pages/Customer/CreatePost";
 import RoomFavorite from "@pages/Customer/RoomFavorite";
+import RoomManger from "@pages/Customer/RoomManager";
 import ChangePassword from "@pages/Customer/ChangePassword";
 import VerifyAccount from "@pages/VerifyAccount";
 import PersonalInformation from "@pages/Customer/PersonalInformation";
@@ -77,6 +79,7 @@ function App() {
           <Route path={ROUTES.ADMIN.PARTNER} element={<PartnerManager />} />
           <Route path={ROUTES.ADMIN.POST} element={<PostManager />} />
           <Route path={ROUTES.ADMIN.DASHBOARD} element={<Dashboard />} />
+          <Route path={ROUTES.ADMIN.POST_DETAIL} element={<PostDetailManager />} />
         </Route>
         <Route element={<CustomerLayout />}>
           <Route path={ROUTES.USER.PARTNER_REGISTRATION} element={<PartnerRegistration />} />
@@ -91,6 +94,7 @@ function App() {
             <Route path={ROUTES.USER.PROFILE} element={<PersonalInformation />} />
             <Route path={ROUTES.USER.CHANGE_PASSWORD} element={<ChangePassword />} />
             <Route path={ROUTES.USER.FAVORITE_HOMES} element={<RoomFavorite />} />
+            <Route path={ROUTES.USER.ROOM_MANAGER} element={<RoomManger />} />
           </Route>
         </Route>
       </Routes>

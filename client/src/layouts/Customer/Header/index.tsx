@@ -13,6 +13,7 @@ import { Avatar, Badge, Dropdown, Empty } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
+import dayjs from "dayjs";
 import { getNotificationByUserIdRequest, logoutRequest, updateNotificationByUserIdRequest } from "@slices/user.slice";
 function Header() {
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -32,7 +33,7 @@ function Header() {
         return (
           <S.NotificationElement key={index} $isWatched={item.isWatched}>
             {item.message}
-            <S.TimeNotification>3 phút trước</S.TimeNotification>
+            <S.TimeNotification>{dayjs(item.createdAt).fromNow()}</S.TimeNotification>
           </S.NotificationElement>
         );
       }),

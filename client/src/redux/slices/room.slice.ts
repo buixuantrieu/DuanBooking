@@ -57,6 +57,7 @@ export const roleSlice = createSlice({
           [key: string]:
             | string
             | number
+            | boolean
             | string[]
             | number[]
             | undefined
@@ -137,6 +138,19 @@ export const roleSlice = createSlice({
       state.roomList.error = error;
       state.amenityList.loading = false;
     },
+    updatePostRequest: (state, _action: PayloadAction<{ id: number; data: RoomType; callback?: () => void }>) => {
+      state.roomList.loading = true;
+      state.roomList.error = null;
+    },
+    updatePostSuccess: (state) => {
+      state.roomList.loading = false;
+      state.roomList.error = null;
+    },
+    updatePostFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomList.error = error;
+      state.roomList.loading = false;
+    },
   },
 });
 
@@ -156,6 +170,9 @@ export const {
   getRoomDetailRequest,
   getRoomDetailSuccess,
   getRoomDetailFail,
+  updatePostRequest,
+  updatePostSuccess,
+  updatePostFail,
 } = roleSlice.actions;
 
 export default roleSlice.reducer;

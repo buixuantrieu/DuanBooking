@@ -26,6 +26,8 @@ function RoomList() {
       amenityIds: Array.isArray(params.amenityIds) ? params.amenityIds.map((item) => Number(item)) : [],
       priceRange: Array.isArray(params.priceRange) ? params.priceRange.map((price) => Number(price)) : pricePerNight,
       typeRoomId: typeof params.typeRoomId === "string" ? Number(params.typeRoomId) : undefined,
+      isDelete: false,
+      isApproved: true,
     };
   }, [search]);
 

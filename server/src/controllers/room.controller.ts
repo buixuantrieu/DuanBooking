@@ -1,4 +1,11 @@
-import { createRoom, getAllAmenity, getAllRoom, getAllRoomType, getRoomDetailById } from "@services/roomService";
+import {
+  createRoom,
+  getAllAmenity,
+  getAllRoom,
+  getAllRoomType,
+  getRoomDetailById,
+  updateRoom,
+} from "@services/roomService";
 import { Request, Response } from "express";
 
 interface CustomRequest extends Request {
@@ -7,7 +14,9 @@ interface CustomRequest extends Request {
 export class RoomController {
   public async index(req: Request, res: Response) {
     try {
-      const { q, amenityIds, priceRange, typeRoomId, sort } = req.query;
+      const { q, amenityIds, priceRange, typeRoomId, sort, isApproved } = req.query;
+      const isApprovedQuery: boolean | undefined =
+        isApproved === "true" ? true : isApproved === "false" ? false : undefined;
       let amenityList: number[] = [];
       let pricePerNight: number[] = [];
       let roomTypeId: number | undefined = undefined;
@@ -27,7 +36,7 @@ export class RoomController {
         sortBy = { [arrSort[0]]: arrSort[1] };
       }
 
-      const result = await getAllRoom(q as string, amenityList, pricePerNight, roomTypeId, sortBy);
+      const result = await getAllRoom(q as string, amenityList, pricePerNight, roomTypeId, sortBy, isApprovedQuery);
       res.json(result);
     } catch (e) {
       return res.status(500).json({ message: "Internal Server Error" });
@@ -39,6 +48,16 @@ export class RoomController {
       const { id } = req.params;
       const room = await getRoomDetailById(Number(id));
       res.json(room);
+    } catch (e) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  public async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await updateRoom(Number(id), req.body);
+      res.json(result);
     } catch (e) {
       return res.status(500).json({ message: "Internal Server Error" });
     }

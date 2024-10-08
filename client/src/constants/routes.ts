@@ -4,6 +4,7 @@ export const ROUTES = {
   USER: {
     HOME: "/",
     ABOUT: "/about",
+    ROOM_MANAGER: "/room-manager",
     NOTIFICATION: "/notification",
     ROOM_LIST: "/room",
     ROOM_DETAIL: "/room/:id",
@@ -18,7 +19,7 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: "/admin",
     PARTNER: "/admin/partner",
-    POST: "admin/post",
+    POST: "/admin/post",
     ACCOUNT_MANAGEMENT: "/admin/account-management",
     USER_MANAGE: "/admin/users",
     BOOKING_MANAGE: "/admin/bookings",
