@@ -2,7 +2,7 @@ import { RestActions } from "@configs/enum";
 import { ReviewController } from "@controllers";
 import { Router } from "express";
 import { Route } from ".";
-import { authenticateToken } from "src/midleware/authMidleware";
+import { authenticateToken } from "src/middleware/authMiddleware";
 
 export class ReviewRoute {
   private static path = Router();

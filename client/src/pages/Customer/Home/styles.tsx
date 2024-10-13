@@ -215,7 +215,9 @@ export const HomeStayBox = styled.div`
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   border-radius: 4px;
 `;
-export const HomeImage = styled.img``;
+export const HomeImage = styled.img`
+  width: 100%;
+`;
 export const TitleBoxHome = styled.div`
   margin: 6px 0 4px 0;
   font-size: 18px;

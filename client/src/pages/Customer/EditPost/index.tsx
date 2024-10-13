@@ -1,24 +1,31 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Card, Row, Form, Col, Input, Button, Select, Upload, Radio, Checkbox, InputNumber } from "antd";
+import { Card, Row, Form, Col, Input, Button, Select, Radio, Checkbox, InputNumber, notification } from "antd";
 import * as S from "./styles";
 import { Editor } from "@tinymce/tinymce-react";
 import { useEffect, useMemo, useState } from "react";
-import { b64EncodeUnicode } from "../../../ultils/file";
-
-import { RcFile } from "antd/lib/upload";
+import { b64DecodeUnicode, b64EncodeUnicode } from "../../../ultils/file";
 import { getDistrictRequest, getProvinceRequest, getWardRequest } from "@slices/address.slice";
-import { getRoomTypeRequest, getAmenityRequest, createRoomRequest } from "@slices/room.slice";
-
+import {
+  getRoomTypeRequest,
+  getAmenityRequest,
+  getRoomDetailRequest,
+  updateRoomRequest,
+  updateSubImageRequest,
+} from "@slices/room.slice";
+import { FcEditImage } from "react-icons/fc";
 import { storage } from "../../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "store";
-import { FaCloudUploadAlt } from "react-icons/fa";
 import { ROUTES } from "@constants/routes";
 
-function CreatePost() {
+function EditPost() {
+  const { id } = useParams();
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,22 +33,40 @@ function CreatePost() {
     dispatch(getRoomTypeRequest());
     dispatch(getProvinceRequest());
     dispatch(getAmenityRequest());
+    dispatch(getRoomDetailRequest({ id: Number(id) }));
   }, []);
+
   const [contentProduct, setContentProduct] = useState("");
   const { provinceList } = useSelector((state: RootState) => state.address);
   const { userInfo } = useSelector((state: RootState) => state.user);
   const { districtList } = useSelector((state: RootState) => state.address);
   const { wardList } = useSelector((state: RootState) => state.address);
-  const { roomTypeList, amenityList } = useSelector((state: RootState) => state.room);
+  const { roomTypeList, amenityList, roomDetail } = useSelector((state: RootState) => state.room);
+  const description = b64DecodeUnicode(roomDetail.data.description);
+
   useEffect(() => {
-    if (!userInfo.data.Partner?.isApproved) {
-      navigate(ROUTES.USER.HOME);
+    if (userInfo.data.Partner) {
+      if (!userInfo.data.Partner.isApproved) {
+        navigate(ROUTES.USER.HOME);
+      }
     }
-  });
+  }, [userInfo.data.Partner]);
+  useEffect(() => {
+    const amenities = roomDetail.data?.RoomAmenity?.map((item) => item.amenityId);
+
+    form.setFieldsValue({
+      roomName: roomDetail.data.roomName,
+      title: roomDetail.data.title,
+      pricePerNight: roomDetail.data.pricePerNight,
+      address: roomDetail.data.location?.split(",")[0],
+      roomTypeId: roomDetail.data.roomTypeId,
+      amenities,
+    });
+  }, [roomDetail.data]);
 
   const renderRoomTypeOptions = useMemo(() => {
     return roomTypeList.data.map((item) => (
-      <Col span={6} key={item.id}>
+      <Col span={4} key={item.id}>
         <Radio value={item.id}>{item.typeName}</Radio>
       </Col>
     ));
@@ -81,7 +106,37 @@ function CreatePost() {
     setContentProduct(content);
   };
 
-  const handleCreate = async (values: {
+  const handleUploadSubImage = async (imageId: number, file: any) => {
+    try {
+      const storageRef = ref(storage, `images/${file[0].name}`);
+      await uploadBytes(storageRef, file[0]);
+      const url = await getDownloadURL(storageRef);
+      dispatch(updateSubImageRequest({ id: imageId, productId: Number(id), data: { image: url } }));
+    } catch (e) {
+      notification.error({ message: "Tải ảnh thất bại" });
+    }
+  };
+  const handleUpdateImage = async (file: any) => {
+    try {
+      const storageRef = ref(storage, `images/${file[0].name}`);
+      await uploadBytes(storageRef, file[0]);
+      const url = await getDownloadURL(storageRef);
+      dispatch(
+        updateRoomRequest({
+          id: Number(id),
+          data: { image: url },
+          callback: () => {
+            dispatch(getRoomDetailRequest({ id: Number(id) }));
+            notification.success({ message: "Cập nhật ảnh đại diện thành công!" });
+          },
+        })
+      );
+    } catch (e) {
+      notification.error({ message: "Tải ảnh thất bại" });
+    }
+  };
+
+  const handleUpdateRoom = async (values: {
     title: string;
     roomName: string;
     province: number;
@@ -91,57 +146,59 @@ function CreatePost() {
     address: string;
     pricePerNight: number;
     amenities: number;
-    images: { originFileObj: RcFile }[];
-    avatar: { originFileObj: RcFile }[];
   }) => {
     const description = b64EncodeUnicode(contentProduct);
     const provinceData = provinceList.data.find((item) => item.province_id === values.province);
     const districtData = districtList.data.find((item) => item.district_id === values.district);
     const wardData = wardList.data.find((item) => item.wards_id === values.ward);
     const address = `${values.address}, ${wardData?.name}, ${districtData?.name}, ${provinceData?.name}`;
-
-    try {
-      const uploadPromises = values.images.map(async (item) => {
-        const storageRef = ref(storage, `images/${item.originFileObj.name}`);
-        await uploadBytes(storageRef, item.originFileObj);
-        return getDownloadURL(storageRef);
-      });
-      const uploadPromise = async () => {
-        const storageRef = ref(storage, `images/${values.avatar[0].originFileObj.name}`);
-        await uploadBytes(storageRef, values.avatar[0].originFileObj);
-        return getDownloadURL(storageRef);
-      };
-      const imageUrls = await Promise.all(uploadPromises);
-      const avatar = await uploadPromise();
-
-      dispatch(
-        createRoomRequest({
-          data: {
-            title: values.title,
-            roomName: values.roomName,
-            image: avatar,
-            description: description,
-            districtId: values.district,
-            provinceId: values.province,
-            wardId: values.ward,
-            location: address,
-            pricePerNight: values.pricePerNight,
-            roomTypeId: values.roomTypeId,
-            amenities: values.amenities,
-            imageList: imageUrls,
-          },
-          callback: () => form.resetFields(),
-        })
-      );
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+    const newData = {
+      roomName: values.roomName,
+      title: values.title,
+      location: address,
+      pricePerNight: values.pricePerNight,
+      roomTypeId: values.roomTypeId,
+      amenities: values.amenities,
+      description,
+      districtId: values.district,
+      provinceId: values.province,
+      wardId: values.ward,
+    };
+    dispatch(
+      updateRoomRequest({
+        id: Number(id),
+        data: newData,
+        callback: () => notification.success({ message: "Cập nhật thành công" }),
+      })
+    );
   };
+  const renderSubImage = useMemo(
+    () =>
+      roomDetail.data.RoomImage?.map((item, index) => {
+        return (
+          <Col key={index} span={8}>
+            <S.SubBoxImage>
+              <S.EditIcon htmlFor={item.id + "subImage"}>
+                <input
+                  id={item.id + "subImage"}
+                  style={{ display: "none" }}
+                  onChange={(e) => handleUploadSubImage(Number(item.id), e.target.files)}
+                  type="file"
+                />
+                <FcEditImage />
+              </S.EditIcon>
+              <img style={{ aspectRatio: "3/2" }} width="100%" src={item.image} alt="" />
+            </S.SubBoxImage>
+          </Col>
+        );
+      }),
+    [roomDetail.data]
+  );
 
   return (
     <S.CreatePostWrapper>
-      <Card title="Tạo bài đăng">
-        <Form form={form} layout="vertical" onFinish={handleCreate}>
+      <Card title="Chỉnh sửa bài đăng">
+        <Form form={form} layout="vertical" onFinish={handleUpdateRoom}>
           <Row gutter={[16, 16]}>
             <Col span={12}>
               <Form.Item
@@ -188,14 +245,14 @@ function CreatePost() {
                       });
                     },
                   }}
-                  initialValue="<h3>Mingsu booking xin chào!<h1/>"
+                  initialValue={description}
                   onEditorChange={handleEditorChange}
                 />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                <Col span={12}>
+                {/* <Col span={12}>
                   <Form.Item
                     valuePropName="fileList"
                     getValueFromEvent={(e) => e.fileList}
@@ -230,6 +287,28 @@ function CreatePost() {
                       <Button icon={<FaCloudUploadAlt />}>Bấm để tải ảnh lên</Button>
                     </Upload>
                   </Form.Item>
+                </Col> */}
+
+                <Col span={8}>
+                  <Card style={{ width: "100%" }} title="Ảnh đại diện:">
+                    <S.SubBoxImage>
+                      <S.EditIcon htmlFor={roomDetail.data.id + "image"}>
+                        <input
+                          id={roomDetail.data.id + "image"}
+                          style={{ display: "none" }}
+                          onChange={(e) => handleUpdateImage(e.target.files)}
+                          type="file"
+                        />
+                        <FcEditImage />
+                      </S.EditIcon>
+                      <img style={{ aspectRatio: "3/2" }} width="100%" src={roomDetail.data.image} alt="" />
+                    </S.SubBoxImage>
+                  </Card>
+                </Col>
+                <Col span={16}>
+                  <Card style={{ width: "100%" }} title="Ảnh mô tả:">
+                    <Row gutter={[16, 16]}>{renderSubImage}</Row>
+                  </Card>
                 </Col>
 
                 <Col span={24}>
@@ -300,6 +379,10 @@ function CreatePost() {
                     <Input />
                   </Form.Item>
                 </Col>
+                <Col span={24}>
+                  <span style={{ fontWeight: "bold" }}>Địa chỉ cũ: </span>
+                  <span>{roomDetail.data.location}</span>
+                </Col>
                 <Col span={8}>
                   <Form.Item
                     label="Tỉnh/ Thành phố:"
@@ -365,8 +448,8 @@ function CreatePost() {
               </Row>
             </Col>
           </Row>
-          <Button loading={amenityList.loading} htmlType="submit">
-            Tạo bài đăng
+          <Button type="primary" loading={amenityList.loading} htmlType="submit">
+            Cập nhật
           </Button>
         </Form>
       </Card>
@@ -374,4 +457,4 @@ function CreatePost() {
   );
 }
 
-export default CreatePost;
+export default EditPost;

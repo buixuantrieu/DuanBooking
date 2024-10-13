@@ -120,14 +120,21 @@ export interface RoomType {
   provinceId?: number;
   districtId?: number;
   wardId?: number;
+  RoomAmenity?: RoomAmenityType[];
   amenities?: number;
   imageList?: string[];
   user?: UserType;
   Favorite?: FavoriteType[];
   RoomImage?: RoomImageType[] | undefined;
   Review?: ReviewType[];
+  Booking?: BookingType[];
 }
 
+export interface RoomAmenityType {
+  id?: number;
+  amenityId?: number;
+  roomId?: number;
+}
 export interface UserSettingType {
   id: number;
   userId: number;
@@ -185,6 +192,11 @@ export interface BookingType {
   room?: RoomType;
   totalPrice?: number;
   Payment?: Payment;
+}
+export interface RoomImageType {
+  id?: number;
+  image?: string;
+  roomId?: number;
 }
 export interface Payment {
   id?: number;

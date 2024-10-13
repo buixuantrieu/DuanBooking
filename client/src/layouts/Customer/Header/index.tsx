@@ -47,27 +47,31 @@ function Header() {
     },
     {
       key: "1",
-      label: <Link to={ROUTES.USER.PROFILE}>Thông tin cá nhân</Link>,
+      label: userInfo.data.Partner?.isApproved && <Link to={ROUTES.USER.ROOM_MANAGER}>Quản lí phòng</Link>,
     },
     {
       key: "2",
-      label: <Link to={ROUTES.USER.CHANGE_PASSWORD}>Thay đổi mật khẩu</Link>,
+      label: <Link to={ROUTES.USER.PROFILE}>Thông tin cá nhân</Link>,
     },
     {
       key: "3",
+      label: <Link to={ROUTES.USER.CHANGE_PASSWORD}>Thay đổi mật khẩu</Link>,
+    },
+    {
+      key: "4",
       label: <Link to={ROUTES.USER.BOOKING_HISTORY}>Lịch sử đặt phòng</Link>,
     },
 
     {
-      key: "4",
+      key: "5",
       label: <Link to={ROUTES.USER.FAVORITE_HOMES}>Danh sách phòng yêu thích</Link>,
     },
     {
-      key: "5",
+      key: "6",
       label: <Link to={ROUTES.USER.PROFILE}>Cài đặt</Link>,
     },
     {
-      key: "6",
+      key: "7",
       label: (
         <div
           style={{ fontWeight: 500 }}

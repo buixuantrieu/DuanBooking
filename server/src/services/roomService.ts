@@ -1,8 +1,25 @@
-import { Room } from "@prisma/client";
+import { Room, RoomType } from "@prisma/client";
 import prisma from "@prismaClient";
 
 export const getAllRoomType = async () => {
   const result = await prisma.roomType.findMany();
+  return result;
+};
+export const updateTypeRoom = async (id: number, data: { typeName: string; description: string; imageUrl: string }) => {
+  const result = await prisma.roomType.update({
+    data,
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+export const getRoomTypeDetail = async (id: number) => {
+  const result = await prisma.roomType.findFirst({
+    where: {
+      id,
+    },
+  });
   return result;
 };
 export const getAllAmenity = async () => {
@@ -22,9 +39,19 @@ export const getAllRoom = async (
       roomType: true,
       Favorite: true,
       Review: true,
+      Booking: {
+        include: {
+          Payment: {
+            where: {
+              status: 1,
+            },
+          },
+        },
+      },
       user: {
         include: {
           profile: true,
+          Partner: true,
         },
       },
     },
@@ -46,8 +73,15 @@ export const getAllRoom = async (
       roomTypeId,
       isDelete: false,
       isApproved,
+      user: {
+        Partner: {
+          isApproved: true,
+          isActive: true,
+        },
+      },
     },
-    orderBy: orderBySort || { createAt: "desc" },
+
+    orderBy: orderBySort || { view: "desc" },
   });
   return result;
 };
@@ -122,6 +156,7 @@ export const getRoomDetailById = async (id: number) => {
           Partner: true,
         },
       },
+      RoomAmenity: true,
     },
   });
   return result;
@@ -135,4 +170,89 @@ export const updateRoom = async (id: number, data: Room) => {
     },
   });
   return room;
+};
+export const getRoomByPartnerId = async (userId: string | undefined) => {
+  const rooms = await prisma.room.findMany({
+    where: {
+      partnerId: userId,
+      isApproved: true,
+      isDelete: false,
+    },
+  });
+  return rooms;
+};
+export const updateRoomImage = async (id: number, image: string) => {
+  const roomImage = await prisma.roomImage.update({
+    data: {
+      image,
+    },
+    where: { id },
+  });
+  return roomImage;
+};
+export const getFavoriteById = async (roomId: number) => {
+  const favoriteList = await prisma.favorite.findMany({
+    where: {
+      roomId,
+    },
+  });
+  return favoriteList;
+};
+export const updateFavorite = async (userId: string, roomId: number) => {
+  const result = await prisma.favorite.findFirst({
+    where: {
+      roomId,
+      userId,
+    },
+  });
+  if (result?.id) {
+    await prisma.favorite.delete({
+      where: {
+        id: result.id,
+      },
+    });
+  } else {
+    await prisma.favorite.create({
+      data: {
+        userId,
+        roomId,
+      },
+    });
+  }
+};
+export const createRoomType = async (typeName: string, description: string, imageUrl: string) => {
+  const result = await prisma.roomType.create({
+    data: {
+      typeName,
+      description,
+      imageUrl,
+    },
+  });
+  return result;
+};
+export const getAmenityDetail = async (id: number) => {
+  const result = await prisma.amenity.findFirst({ where: { id } });
+  return result;
+};
+export const updateAmenity = async (id: number, amenityName: string, description: string) => {
+  const result = await prisma.amenity.update({
+    data: {
+      description,
+      amenityName,
+    },
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+export const createAmenity = async (amenityName: string, description: string) => {
+  const result = await prisma.amenity.create({
+    data: {
+      amenityName,
+      description,
+      imageUrl: "",
+    },
+  });
+  return result;
 };

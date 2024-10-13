@@ -9,13 +9,17 @@ import AdminLayout from "@layouts/Admin";
 import UserInfoLayout from "@layouts/UserInfo";
 import PartnerManager from "@pages/Admin/PartnerManager";
 import CustomerLayout from "@layouts/Customer";
+import AmenityManager from "@pages/Admin/Amenity";
 import PartnerRegistration from "@pages/Customer/PartnerRegistration";
 import PostDetailManager from "@pages/Admin/PostDetailManager";
+import EditPost from "@pages/Customer/EditPost";
+import TypeHomeManager from "@pages/Admin/TypeHome";
 import HomePage from "@pages/Customer/Home";
 import Dashboard from "@pages/Admin/Dashboard";
 import PostManager from "@pages/Admin/PostManager";
 import BookingHistory from "@pages/Customer/BookingHistory";
 import RoomList from "@pages/Customer/RoomList";
+import NotFound from "@pages/NotFound";
 import CreatePost from "@pages/Customer/CreatePost";
 import RoomFavorite from "@pages/Customer/RoomFavorite";
 import RoomManger from "@pages/Customer/RoomManager";
@@ -80,10 +84,13 @@ function App() {
           <Route path={ROUTES.ADMIN.POST} element={<PostManager />} />
           <Route path={ROUTES.ADMIN.DASHBOARD} element={<Dashboard />} />
           <Route path={ROUTES.ADMIN.POST_DETAIL} element={<PostDetailManager />} />
+          <Route path={ROUTES.ADMIN.TYPE} element={<TypeHomeManager />} />
+          <Route path={ROUTES.ADMIN.AMENITY} element={<AmenityManager />} />
         </Route>
         <Route element={<CustomerLayout />}>
           <Route path={ROUTES.USER.PARTNER_REGISTRATION} element={<PartnerRegistration />} />
           <Route path={ROUTES.USER.HOME} element={<HomePage />} />
+          <Route path={ROUTES.USER.EDIT_POST} element={<EditPost />} />
           <Route path={ROUTES.USER.CREATE_POST} element={<CreatePost />} />
           <Route path={ROUTES.USER.ROOM_LIST} element={<RoomList />} />
           <Route path={ROUTES.USER.ROOM_DETAIL} element={<RoomDetail />} />
@@ -97,6 +104,7 @@ function App() {
             <Route path={ROUTES.USER.ROOM_MANAGER} element={<RoomManger />} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ConfigProvider>
   );

@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
-import { getRoomDetailRequest, updatePostRequest } from "@slices/room.slice";
+import { getRoomDetailRequest, updateRoomRequest } from "@slices/room.slice";
 import { RootState } from "store";
 import * as S from "./style";
 import { b64DecodeUnicode } from "ultils/file";
@@ -40,7 +40,7 @@ function PostDetailManager() {
 
   const handleApprove = (id: number) => {
     dispatch(
-      updatePostRequest({
+      updateRoomRequest({
         id,
         data: { isApproved: true },
         callback: () => {
@@ -52,7 +52,7 @@ function PostDetailManager() {
   };
   const handleDelete = (id: number) => {
     dispatch(
-      updatePostRequest({
+      updateRoomRequest({
         id,
         data: { isDelete: true },
         callback: () => {

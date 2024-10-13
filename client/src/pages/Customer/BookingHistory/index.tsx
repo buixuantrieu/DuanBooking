@@ -7,6 +7,8 @@ import { getBookingByUserIdRequest, updateCreateBookingRequest } from "@slices/b
 import dayjs from "dayjs";
 import Paypal from "../../../Paypal";
 import { Empty } from "antd";
+import { Link, generatePath } from "react-router-dom";
+import { ROUTES } from "@constants/routes";
 function BookingHistory() {
   const dispatch = useDispatch();
 
@@ -32,7 +34,9 @@ function BookingHistory() {
               )}
 
               <S.Label>Tên Phòng:</S.Label>
-              <S.Content>{item.room?.roomName}</S.Content>
+              <Link to={generatePath(ROUTES.USER.ROOM_DETAIL, { id: item.roomId })}>
+                <S.Content>{item.room?.roomName}</S.Content>
+              </Link>
             </S.ContentContainer>
             <S.ContentContainer>
               <S.Label>Địa chỉ:</S.Label>

@@ -164,3 +164,20 @@ export const PriceTotal = styled.div`
   gap: 4px;
   font-weight: 400;
 `;
+export const LockContainer = styled.div`
+  display: flex;
+  gap: 4px;
+  font-size: 20px;
+  align-items: center;
+  & span {
+    color: red;
+  }
+`;
+export const IconFavorite = styled.span`
+  font-size: 20px;
+  color: red;
+  & span {
+    font-size: 12px;
+    color: black;
+  }
+`;

@@ -7,8 +7,18 @@ export interface RoomTypeList {
     loading: boolean;
     error: string | null;
   };
+  roomTypeDetail: {
+    data: TypeRoomType;
+    loading: boolean;
+    error: string | null;
+  };
   amenityList: {
     data: AmenityType[];
+    loading: boolean;
+    error: string | null;
+  };
+  amenityDetail: {
+    data: AmenityType;
     loading: boolean;
     error: string | null;
   };
@@ -29,8 +39,18 @@ const initialState: RoomTypeList = {
     loading: false,
     error: null,
   },
+  roomTypeDetail: {
+    data: {},
+    loading: false,
+    error: null,
+  },
   amenityList: {
     data: [],
+    loading: false,
+    error: null,
+  },
+  amenityDetail: {
+    data: {},
     loading: false,
     error: null,
   },
@@ -46,7 +66,7 @@ const initialState: RoomTypeList = {
   },
 };
 
-export const roleSlice = createSlice({
+export const roomSlice = createSlice({
   name: "room",
   initialState,
   reducers: {
@@ -95,6 +115,53 @@ export const roleSlice = createSlice({
       state.roomTypeList.error = error;
       state.roomTypeList.loading = false;
     },
+    updateRoomTypeRequest: (
+      state,
+      _action: PayloadAction<{ id: number; data: TypeRoomType; callback?: () => void }>
+    ) => {
+      state.roomTypeList.loading = true;
+      state.roomTypeList.error = null;
+    },
+
+    updateRoomTypeSuccess: (state) => {
+      state.roomTypeList.loading = false;
+      state.roomTypeList.error = null;
+    },
+    updateRoomTypeFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomTypeList.error = error;
+      state.roomTypeList.loading = false;
+    },
+    createRoomTypeRequest: (state, _action: PayloadAction<{ data: TypeRoomType; callback?: () => void }>) => {
+      state.roomTypeList.loading = true;
+      state.roomTypeList.error = null;
+    },
+
+    createRoomTypeSuccess: (state) => {
+      state.roomTypeList.loading = false;
+      state.roomTypeList.error = null;
+    },
+    createRoomTypeFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomTypeList.error = error;
+      state.roomTypeList.loading = false;
+    },
+    getRoomTypeDetailRequest: (state, _action: PayloadAction<{ id: number; callback?: () => void }>) => {
+      state.roomTypeDetail.loading = true;
+      state.roomTypeDetail.error = null;
+    },
+
+    getRoomTypeDetailSuccess: (state, action) => {
+      const { data } = action.payload;
+      state.roomTypeDetail.data = data;
+      state.roomTypeDetail.loading = false;
+      state.roomTypeDetail.error = null;
+    },
+    getRoomTypeDetailFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomTypeDetail.error = error;
+      state.roomTypeDetail.loading = false;
+    },
     getAmenityRequest: (state, _action: PayloadAction) => {
       state.amenityList.loading = true;
       state.amenityList.error = null;
@@ -109,6 +176,48 @@ export const roleSlice = createSlice({
       const { error } = action.payload;
       state.amenityList.error = error;
       state.amenityList.loading = false;
+    },
+    createAmenityRequest: (state, _action: PayloadAction<{ data: AmenityType }>) => {
+      state.amenityList.loading = true;
+      state.amenityList.error = null;
+    },
+    createAmenitySuccess: (state) => {
+      state.amenityList.loading = false;
+      state.amenityList.error = null;
+    },
+    createAmenityFail: (state, action) => {
+      const { error } = action.payload;
+      state.amenityList.error = error;
+      state.amenityList.loading = false;
+    },
+
+    updateAmenityRequest: (state, _action: PayloadAction<{ data: AmenityType; id: number }>) => {
+      state.amenityList.loading = true;
+      state.amenityList.error = null;
+    },
+    updateAmenitySuccess: (state) => {
+      state.amenityList.loading = false;
+      state.amenityList.error = null;
+    },
+    updateAmenityFail: (state, action) => {
+      const { error } = action.payload;
+      state.amenityList.error = error;
+      state.amenityList.loading = false;
+    },
+    getAmenityDetailRequest: (state, _action: PayloadAction<{ id: number }>) => {
+      state.amenityDetail.loading = true;
+      state.amenityDetail.error = null;
+    },
+    getAmenityDetailSuccess: (state, action) => {
+      const { data } = action.payload;
+      state.amenityDetail.data = data;
+      state.amenityDetail.loading = false;
+      state.amenityDetail.error = null;
+    },
+    getAmenityDetailFail: (state, action) => {
+      const { error } = action.payload;
+      state.amenityDetail.error = error;
+      state.amenityDetail.loading = false;
     },
     getRoomDetailRequest: (state, _action: PayloadAction<{ id: number }>) => {
       state.roomDetail.loading = true;
@@ -138,18 +247,49 @@ export const roleSlice = createSlice({
       state.roomList.error = error;
       state.amenityList.loading = false;
     },
-    updatePostRequest: (state, _action: PayloadAction<{ id: number; data: RoomType; callback?: () => void }>) => {
+    updateRoomRequest: (state, _action: PayloadAction<{ id: number; data: RoomType; callback?: () => void }>) => {
       state.roomList.loading = true;
       state.roomList.error = null;
     },
-    updatePostSuccess: (state) => {
+    updateRoomSuccess: (state) => {
       state.roomList.loading = false;
       state.roomList.error = null;
     },
-    updatePostFail: (state, action) => {
+    updateRoomFail: (state, action) => {
       const { error } = action.payload;
       state.roomList.error = error;
       state.roomList.loading = false;
+    },
+    getRoomByPartnerIdRequest: (state) => {
+      state.roomList.loading = true;
+      state.roomList.error = null;
+    },
+    getRoomByPartnerIdSuccess: (state, action) => {
+      const { data } = action.payload;
+      state.roomList.data = data;
+      state.roomList.loading = false;
+      state.roomList.error = null;
+    },
+    getRoomByPartnerIdFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomList.error = error;
+      state.roomList.loading = false;
+    },
+    updateSubImageRequest: (
+      state,
+      _action: PayloadAction<{ data: { image: string }; id: number; productId: number }>
+    ) => {
+      state.roomDetail.loading = true;
+      state.roomDetail.error = null;
+    },
+    updateSubImageSuccess: (state) => {
+      state.roomDetail.loading = false;
+      state.roomDetail.error = null;
+    },
+    updateSubImageFail: (state, action) => {
+      const { error } = action.payload;
+      state.roomDetail.error = error;
+      state.roomDetail.loading = false;
     },
   },
 });
@@ -170,9 +310,33 @@ export const {
   getRoomDetailRequest,
   getRoomDetailSuccess,
   getRoomDetailFail,
-  updatePostRequest,
-  updatePostSuccess,
-  updatePostFail,
-} = roleSlice.actions;
+  updateRoomRequest,
+  updateRoomSuccess,
+  updateRoomFail,
+  getRoomByPartnerIdRequest,
+  getRoomByPartnerIdSuccess,
+  getRoomByPartnerIdFail,
+  updateSubImageRequest,
+  updateSubImageSuccess,
+  updateSubImageFail,
+  getRoomTypeDetailRequest,
+  getRoomTypeDetailSuccess,
+  getRoomTypeDetailFail,
+  updateRoomTypeRequest,
+  updateRoomTypeSuccess,
+  updateRoomTypeFail,
+  createRoomTypeRequest,
+  createRoomTypeSuccess,
+  createRoomTypeFail,
+  getAmenityDetailRequest,
+  getAmenityDetailSuccess,
+  getAmenityDetailFail,
+  updateAmenityRequest,
+  updateAmenitySuccess,
+  updateAmenityFail,
+  createAmenityRequest,
+  createAmenitySuccess,
+  createAmenityFail,
+} = roomSlice.actions;
 
-export default roleSlice.reducer;
+export default roomSlice.reducer;

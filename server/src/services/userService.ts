@@ -65,6 +65,7 @@ export const changePassword = async (useId: string, oldPassword: string, newPass
       id: useId,
     },
   });
+
   const checkPass = await checkPassword(oldPassword, user?.password as string);
   if (checkPass) {
     const hashPass = await hashPassword(newPassword);

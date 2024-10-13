@@ -98,7 +98,7 @@ function Register() {
             <Row>
               <Col xs={0} sm={8} md={11} span={12}>
                 <S.AuthPicture>
-                  <img src="src/assets/image/PictureLogin.jpg" alt="" />
+                  <img width="100%" src="src/assets/image/PictureLogin.jpg" alt="" />
                 </S.AuthPicture>
               </Col>
               <Col xs={24} sm={16} md={13} span={12}>
