@@ -100,12 +100,12 @@ function Booking() {
             </S.InfoContainer>
             <S.InfoContainer>
               <S.Label>Giá:</S.Label>
-              <S.InfoContent>{infoBookingTemporary.data.price?.toLocaleString()} Vnd</S.InfoContent>
+              <S.InfoContent>{infoBookingTemporary.data.price?.toLocaleString()}$</S.InfoContent>
             </S.InfoContainer>
             <S.Line></S.Line>
             <S.InfoContainer>
               <S.Label>Tổng tiền:</S.Label>
-              <S.InfoContent>{infoBookingTemporary.data.total?.toLocaleString()} Vnd</S.InfoContent>
+              <S.InfoContent>{infoBookingTemporary.data.total?.toLocaleString()}$</S.InfoContent>
             </S.InfoContainer>
           </Card>
         </Col>

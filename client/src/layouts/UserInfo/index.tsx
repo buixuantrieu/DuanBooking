@@ -22,10 +22,12 @@ function UserInfoLayout() {
 
   const { userInfo } = useSelector((state: RootState) => state.user);
   useEffect(() => {
-    if (!userInfo.data.id) {
-      navigate(ROUTES.USER.HOME);
+    if (userInfo.data.email) {
+      if (!userInfo.data.id) {
+        navigate(ROUTES.USER.HOME);
+      }
     }
-  }, []);
+  }, [userInfo.data]);
   const handleChangeAvatar = async (e: any) => {
     try {
       const file = e.target.files[0];
@@ -60,7 +62,7 @@ function UserInfoLayout() {
         <Card>
           <S.BoxAvatarContainer>
             <S.Avatar>
-              <img src={userInfo.data.profile?.avatar} alt="" />
+              <img width="100%" src={userInfo.data.profile?.avatar} alt="" />
               <input id="upload-avatar" hidden onChange={(e) => handleChangeAvatar(e)} type="file" />
               <S.CameraUpload htmlFor="upload-avatar">
                 <FaCamera />

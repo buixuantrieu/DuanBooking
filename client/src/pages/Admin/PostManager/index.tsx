@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, notification, Table, Tabs } from "antd";
 import * as S from "./style";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { useEffect, useMemo } from "react";
-import { getRoomRequest, updatePostRequest } from "@slices/room.slice";
+import { getRoomRequest, updateRoomRequest } from "@slices/room.slice";
 import { RoomType } from "types/types";
 import { generatePath, Link } from "react-router-dom";
 import { ROUTES } from "@constants/routes";
@@ -27,7 +28,7 @@ function PostManager() {
 
   const handleApprove = (id: number) => {
     dispatch(
-      updatePostRequest({
+      updateRoomRequest({
         id,
         data: { isApproved: true },
         callback: () => {
@@ -38,7 +39,7 @@ function PostManager() {
   };
   const handleDelete = (id: number) => {
     dispatch(
-      updatePostRequest({
+      updateRoomRequest({
         id,
         data: { isDelete: true },
         callback: () => {

@@ -2,7 +2,7 @@ import { RestActions } from "@configs/enum";
 import { UserController } from "@controllers";
 import { Router } from "express";
 import { Route } from ".";
-import { authenticateToken } from "../midleware/authMidleware";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 export class UserRoute {
   private static path = Router();

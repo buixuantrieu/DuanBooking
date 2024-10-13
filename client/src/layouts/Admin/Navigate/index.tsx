@@ -56,7 +56,11 @@ const items: MenuItem[] = [
     children: [
       {
         key: "H1",
-        label: "HomeStay list",
+        label: <Link to={ROUTES.ADMIN.TYPE}>Loại phòng</Link>,
+      },
+      {
+        key: "H2",
+        label: <Link to={ROUTES.ADMIN.AMENITY}>Tiện nghi</Link>,
       },
     ],
   },
@@ -89,6 +93,7 @@ const App: React.FC = () => {
     <S.NavigateWrapper>
       <S.Logo $collapsed={collapsed}>
         <img
+          width="100%"
           src="https://firebasestorage.googleapis.com/v0/b/sdsd-f6fec.appspot.com/o/images%2FLogo.png?alt=media&token=085a122d-7460-4e37-800c-68cf30ee9a08"
           alt=""
         />

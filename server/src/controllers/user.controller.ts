@@ -69,11 +69,12 @@ export class UserController {
   public async changePassword(req: CustomRequest, res: Response) {
     try {
       const { oldPassword, newPassword } = req.body;
+
       const checkPass = await changePassword(req.userId as string, oldPassword, newPassword);
       if (checkPass) {
         res.json(checkPass);
       } else {
-        return res.status(500).json({ message: "Sai tài khoản mật khẩu" });
+        return res.status(401).json({ message: "Sai mật khẩu cũ" });
       }
     } catch (e) {
       return res.status(500).json({ message: "Internal Server Error" });

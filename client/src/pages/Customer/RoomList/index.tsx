@@ -13,7 +13,7 @@ import { RootState } from "store";
 import { ROUTES } from "@constants/routes";
 
 function RoomList() {
-  const [pricePerNight, setPricePerNight] = useState([0, 10000000]);
+  const [pricePerNight, setPricePerNight] = useState([0, 999]);
   const dispatch = useDispatch();
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -56,7 +56,9 @@ function RoomList() {
         return (
           <Col key={index} span={8}>
             <S.BoxRoomContainer>
-              <S.RoomImage src={item.image} />
+              <S.RoomTitle to={generatePath(ROUTES.USER.ROOM_DETAIL, { id: item.id })}>
+                <S.RoomImage src={item.image} />
+              </S.RoomTitle>
               <S.TypeRoomTitle>{item.roomType?.typeName}</S.TypeRoomTitle>
               <S.RoomTitle to={generatePath(ROUTES.USER.ROOM_DETAIL, { id: item.id })}>{item.roomName}</S.RoomTitle>
               <Rate style={{ fontSize: 16, color: "#ee4d2d" }} disabled value={valueRate} allowHalf /> /
@@ -71,7 +73,7 @@ function RoomList() {
               </S.LabelContainer>
               <S.LabelContainer>
                 <S.RoomLabel>Giá thuê:</S.RoomLabel>
-                <S.PricePerNight>{item.pricePerNight?.toLocaleString("en-US")}.00$</S.PricePerNight>/
+                <S.PricePerNight>{item.pricePerNight?.toLocaleString("en-US")}$</S.PricePerNight>/
                 <span style={{ color: "gray", fontSize: 10, transform: "translateY(10px)" }}>đêm</span>
               </S.LabelContainer>
               <S.IconWrapper>
@@ -85,7 +87,7 @@ function RoomList() {
                 </S.IconContainer>
                 <S.IconContainer>
                   <S.LabelIcon>
-                    1.000 <span style={{ fontStyle: "italic", fontSize: 12 }}>lượt đặt</span>
+                    {item.Booking?.length} <span style={{ fontSize: 12 }}>lượt đặt</span>
                   </S.LabelIcon>
                 </S.IconContainer>
               </S.IconWrapper>
@@ -145,7 +147,7 @@ function RoomList() {
                 style={{ width: "100%" }}
                 onChange={(value) => handleFilter("amenityIds", value)}
               >
-                <Row>{renderAmenityList}</Row>
+                <Row gutter={[16, 16]}>{renderAmenityList}</Row>
               </Checkbox.Group>
             </Col>
             <Col span={24}>
@@ -156,7 +158,7 @@ function RoomList() {
                 range
                 value={searchParams.priceRange}
                 min={0}
-                max={10000000}
+                max={999}
                 onChange={(value) => {
                   setPricePerNight(value);
                   handleFilter("priceRange", value);

@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
-import { getRoomDetailRequest } from "@slices/room.slice";
+import { getRoomDetailRequest, updateRoomRequest } from "@slices/room.slice";
 import { createCommentRequest, createReviewRequest, getCommentRequest, getReviewRequest } from "@slices/rate.slice";
 import * as S from "./style";
+import { CiLock } from "react-icons/ci";
+import { MdFavorite } from "react-icons/md";
 
 import { Row, Col, Card, Tabs, Form, Input, Button, Rate, notification, DatePicker } from "antd";
 import { RootState } from "store";
@@ -21,6 +24,7 @@ dayjs.extend(isBetween);
 import "dayjs/locale/vi";
 import { addInfoBookingTemporary, getBookingByRoomIdRequest } from "@slices/booking.slice";
 import { ROUTES } from "@constants/routes";
+import { getFavoriteByProductIdRequest, updateFavoriteRequest } from "@slices/favorite.slice";
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
 function RoomDetail() {
@@ -39,6 +43,7 @@ function RoomDetail() {
   const { userInfo } = useSelector((state: RootState) => state.user);
   const { bookingList } = useSelector((state: RootState) => state.booking);
   const { commentList, reviewList } = useSelector((state: RootState) => state.rate);
+  const { favoriteList } = useSelector((state: RootState) => state.favorite);
 
   const [imageMain, setImageMain] = useState<string | undefined>("");
 
@@ -52,10 +57,52 @@ function RoomDetail() {
     () => reviewList.data.reduce((total, item) => (total += Number(item.rate)), 0),
     [reviewList]
   );
+  const checkFavorite = useMemo(
+    () => favoriteList.data.filter((item) => Number(item.roomId) === Number(id) && item.userId === userInfo.data.id),
+    [favoriteList.data, userInfo.data]
+  );
+
+  useEffect(() => {
+    if (roomDetail.data.id) {
+      if (!roomDetail.data.isApproved) {
+        navigate(ROUTES.USER.NOTFOUND);
+      }
+    }
+    dispatch(getFavoriteByProductIdRequest({ roomId: Number(id) }));
+  }, []);
+
+  const checkIsActive = useMemo(() => {
+    if (!roomDetail.data.user?.Partner?.isActive || !roomDetail.data.user?.Partner.isApproved) {
+      return false;
+    }
+    if (roomDetail.data.isDelete) {
+      return false;
+    }
+    return true;
+  }, [roomDetail.data]);
 
   useEffect(() => {
     setImageMain(roomDetail.data.image);
   }, [roomDetail.data.image]);
+  useEffect(() => {
+    let timeoutId: any = null;
+    if (roomDetail.data.view) {
+      timeoutId = setTimeout(() => {
+        dispatch(
+          updateRoomRequest({
+            id: Number(id),
+            data: { view: Number(roomDetail.data.view) + 1 },
+            callback: () => null,
+          })
+        );
+      }, 20000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [roomDetail.data]);
   useEffect(() => {
     dispatch(getRoomDetailRequest({ id: Number(id) }));
     dispatch(getCommentRequest({ id }));
@@ -76,7 +123,6 @@ function RoomDetail() {
 
   const disabledDate = (current: Dayjs) => {
     if (!current) return false;
-
     if (current.isBefore(dayjs().startOf("day"))) {
       return true;
     }
@@ -266,142 +312,162 @@ function RoomDetail() {
         <Card>
           <S.TitleRoomType>{roomDetail.data.roomType?.typeName}</S.TitleRoomType>
           <S.TitleRoom>{roomDetail.data.roomName}</S.TitleRoom>
-          <Rate style={{ color: "#ee4d2d" }} value={valueRate / reviewList.data.length} allowHalf disabled /> /
-          <span style={{ fontSize: 12 }}> ( {reviewList.data.length} đánh giá )</span>
-          <S.TotalPrice>
-            <S.LabelTotal>Giá thuê phòng:</S.LabelTotal>
-            <S.PriceTotal>
-              <span style={{ fontWeight: 500 }}>{roomDetail.data.pricePerNight?.toLocaleString("en-US")}</span>.00$
-              <i style={{ color: "gray", fontWeight: 300 }}>/</i>
-              <p style={{ fontSize: 10, color: "gray", transform: "translateY(14px)", fontWeight: 300 }}>ngày</p>
-            </S.PriceTotal>
-          </S.TotalPrice>
-          <Form form={formBooking} onFinish={handleBooking}>
-            <Form.Item
-              name="dateBooking"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày!",
-                },
-              ]}
-            >
-              <RangePicker
-                disabled={!roomDetail.data.user?.Partner?.isActive}
-                style={{ width: 350 }}
-                disabledDate={disabledDate}
-                format="YYYY-MM-DD"
-                showTime={false}
-                onCalendarChange={onCalendarChange}
-                placeholder={["Ngày nhận phòng", "Ngày trả phòng"]}
-              />
-            </Form.Item>
-            <S.TotalPrice>
-              <S.LabelTotal>Tổng tiền:</S.LabelTotal>
-              <S.PriceTotal>
-                <span style={{ fontWeight: 600, color: "#a8071a" }}>
-                  {(Number(roomDetail.data.pricePerNight) * totalPrice).toLocaleString("en-US")} .00$
+          {checkIsActive ? (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <S.IconFavorite>
+                  <span
+                    onClick={() => dispatch(updateFavoriteRequest({ roomId: Number(id) }))}
+                    style={{ cursor: "pointer", fontSize: 20 }}
+                  >
+                    {checkFavorite.length ? (
+                      <MdFavorite style={{ color: "red" }} />
+                    ) : (
+                      <MdFavorite style={{ color: "gray" }} />
+                    )}{" "}
+                  </span>
+                  <span>({favoriteList.data.length})</span>
+                </S.IconFavorite>
+                <span>
+                  <Rate style={{ color: "#ee4d2d" }} value={valueRate / reviewList.data.length} allowHalf disabled />
+                  <span style={{ fontSize: 12 }}> ( {reviewList.data.length} )</span>
                 </span>
-                {totalPrice !== 0 && (
-                  <>
-                    <i style={{ color: "gray", fontWeight: 300 }}>/</i>
-                    <p style={{ fontSize: 10, color: "gray", fontWeight: 300, transform: "translateY(14px)" }}>
-                      {" "}
-                      {totalPrice} ngày
-                    </p>
-                  </>
-                )}
-              </S.PriceTotal>
-            </S.TotalPrice>
-            <Button
-              disabled={!roomDetail.data.user?.Partner?.isActive}
-              type="primary"
-              htmlType="submit"
-              style={{ width: "100%" }}
-            >
-              Đặt phòng
-            </Button>
-          </Form>
-          <Tabs
-            style={{ marginTop: 36 }}
-            defaultActiveKey="1"
-            centered
-            items={[
-              {
-                label: <p style={{ fontWeight: 500, fontSize: 16 }}>Bình luận</p>,
-                key: "comment",
-                children: (
-                  <>
-                    <S.FormCommentWrapper>
-                      {userInfo.data.id ? (
-                        <Form form={formComment} onFinish={handleAddComment}>
-                          <Form.Item
-                            name="content"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Không được để trống!",
-                              },
-                            ]}
-                          >
-                            <Input.TextArea style={{ height: 100 }} />
-                          </Form.Item>
-                          <Button htmlType="submit">Gửi bình luận</Button>
-                        </Form>
-                      ) : (
-                        "Bạn cần đăng nhập để có thể bình luận"
-                      )}
-                    </S.FormCommentWrapper>
-                    {renderComment}
-                  </>
-                ),
-              },
-              {
-                label: <p style={{ fontWeight: 500, fontSize: 16 }}>Đánh giá</p>,
-                key: "rate",
-                children: (
-                  <>
-                    <S.FormCommentWrapper>
-                      {!userInfo.data.id ? (
-                        "Bạn cần đăng nhập để có thể đánh giá"
-                      ) : checkRate?.length == 0 ? (
-                        "Bạn cần đặt phòng thành công mới có thể đánh giá"
-                      ) : checkReview.length != 0 ? (
-                        "Bạn đã đánh giá về phòng này rồi!"
-                      ) : (
-                        <Form form={formReview} onFinish={handelAddReview}>
-                          <Form.Item
-                            name="rate"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Vui lòng chọn sao!",
-                              },
-                            ]}
-                          >
-                            <Rate style={{ color: "#ee4d2d" }} />
-                          </Form.Item>
-                          <Form.Item
-                            name="content"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Không được để trống!",
-                              },
-                            ]}
-                          >
-                            <Input.TextArea style={{ height: 100 }} />
-                          </Form.Item>
-                          <Button htmlType="submit">Gửi đánh giá</Button>
-                        </Form>
-                      )}
-                    </S.FormCommentWrapper>
-                    {renderReview}
-                  </>
-                ),
-              },
-            ]}
-          />
+              </div>
+              <S.TotalPrice>
+                <S.LabelTotal>Giá thuê phòng:</S.LabelTotal>
+                <S.PriceTotal>
+                  <span style={{ fontWeight: 500 }}>{roomDetail.data.pricePerNight?.toLocaleString("en-US")}</span>.00$
+                  <i style={{ color: "gray", fontWeight: 300 }}>/</i>
+                  <p style={{ fontSize: 10, color: "gray", transform: "translateY(14px)", fontWeight: 300 }}>ngày</p>
+                </S.PriceTotal>
+              </S.TotalPrice>
+              <Form form={formBooking} onFinish={handleBooking}>
+                <Form.Item
+                  name="dateBooking"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn ngày!",
+                    },
+                  ]}
+                >
+                  <RangePicker
+                    style={{ width: 350 }}
+                    disabledDate={disabledDate}
+                    format="YYYY-MM-DD"
+                    showTime={false}
+                    onCalendarChange={onCalendarChange}
+                    placeholder={["Ngày nhận phòng", "Ngày trả phòng"]}
+                  />
+                </Form.Item>
+                <S.TotalPrice>
+                  <S.LabelTotal>Tổng tiền:</S.LabelTotal>
+                  <S.PriceTotal>
+                    <span style={{ fontWeight: 600, color: "#a8071a" }}>
+                      {(Number(roomDetail.data.pricePerNight) * totalPrice).toLocaleString("en-US")} .00$
+                    </span>
+                    {totalPrice !== 0 && (
+                      <>
+                        <i style={{ color: "gray", fontWeight: 300 }}>/</i>
+                        <p style={{ fontSize: 10, color: "gray", fontWeight: 300, transform: "translateY(14px)" }}>
+                          {" "}
+                          {totalPrice} ngày
+                        </p>
+                      </>
+                    )}
+                  </S.PriceTotal>
+                </S.TotalPrice>
+                <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+                  Đặt phòng
+                </Button>
+              </Form>
+              <Tabs
+                style={{ marginTop: 36 }}
+                defaultActiveKey="1"
+                centered
+                items={[
+                  {
+                    label: <p style={{ fontWeight: 500, fontSize: 16 }}>Bình luận</p>,
+                    key: "comment",
+                    children: (
+                      <>
+                        <S.FormCommentWrapper>
+                          {userInfo.data.id ? (
+                            <Form form={formComment} onFinish={handleAddComment}>
+                              <Form.Item
+                                name="content"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Không được để trống!",
+                                  },
+                                ]}
+                              >
+                                <Input.TextArea style={{ height: 100 }} />
+                              </Form.Item>
+                              <Button htmlType="submit">Gửi bình luận</Button>
+                            </Form>
+                          ) : (
+                            "Bạn cần đăng nhập để có thể bình luận"
+                          )}
+                        </S.FormCommentWrapper>
+                        {renderComment}
+                      </>
+                    ),
+                  },
+                  {
+                    label: <p style={{ fontWeight: 500, fontSize: 16 }}>Đánh giá</p>,
+                    key: "rate",
+                    children: (
+                      <>
+                        <S.FormCommentWrapper>
+                          {!userInfo.data.id ? (
+                            "Bạn cần đăng nhập để có thể đánh giá"
+                          ) : checkRate?.length == 0 ? (
+                            "Bạn cần đặt phòng thành công mới có thể đánh giá"
+                          ) : checkReview.length != 0 ? (
+                            "Bạn đã đánh giá về phòng này rồi!"
+                          ) : (
+                            <Form form={formReview} onFinish={handelAddReview}>
+                              <Form.Item
+                                name="rate"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Vui lòng chọn sao!",
+                                  },
+                                ]}
+                              >
+                                <Rate style={{ color: "#ee4d2d" }} />
+                              </Form.Item>
+                              <Form.Item
+                                name="content"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Không được để trống!",
+                                  },
+                                ]}
+                              >
+                                <Input.TextArea style={{ height: 100 }} />
+                              </Form.Item>
+                              <Button htmlType="submit">Gửi đánh giá</Button>
+                            </Form>
+                          )}
+                        </S.FormCommentWrapper>
+                        {renderReview}
+                      </>
+                    ),
+                  },
+                ]}
+              />
+            </>
+          ) : (
+            <S.LockContainer>
+              <CiLock />
+              <span>Tạm thời không thể đặt phòng</span>
+            </S.LockContainer>
+          )}
         </Card>
       </Col>
     </Row>
